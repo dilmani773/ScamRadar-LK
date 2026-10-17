@@ -53,6 +53,9 @@
   --safe-container: #e6fffa;
   --on-safe: #004d40;
 
+  /* Text on accent-coloured buttons, pills and tags */
+  --on-accent: #ffffff;
+
   /* Typography */
   --font-sans: 'Plus Jakarta Sans', 'Inter', 'Noto Sans Sinhala', 'Noto Sans Tamil', system-ui, -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
@@ -118,6 +121,8 @@ html.dark {
   --safe: #4edea3;
   --safe-container: rgba(78, 222, 163, 0.15);
   --on-safe: #003824;
+
+  --on-accent: #0f131d;
 
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
   --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.45);
@@ -202,7 +207,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #ffffff;
+  color: var(--on-accent);
   box-shadow: 0 4px 12px rgba(0, 35, 111, 0.2);
 }
 
@@ -256,7 +261,7 @@ body {
 
 .nav-tab.active {
   background: var(--primary);
-  color: #ffffff;
+  color: var(--on-accent);
   box-shadow: 0 2px 8px rgba(0, 35, 111, 0.25);
 }
 
@@ -602,7 +607,7 @@ body {
   padding: 0.9rem 2.25rem;
   border-radius: var(--radius-full);
   background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 50%, var(--secondary-container) 100%);
-  color: #ffffff;
+  color: var(--on-accent);
   border: none;
   font-size: 0.925rem;
   font-weight: 700;
@@ -688,7 +693,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #ffffff;
+  color: var(--on-accent);
   flex-shrink: 0;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
 }
@@ -705,7 +710,7 @@ body {
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: #ffffff;
+  color: var(--on-accent);
 }
 
 .verdict-banner.Scam .verdict-tag { background: var(--error); }
@@ -889,7 +894,7 @@ body {
   height: 42px;
   border-radius: var(--radius-full);
   background: var(--primary);
-  color: #ffffff;
+  color: var(--on-accent);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -942,7 +947,7 @@ body {
   padding: 0.65rem 1.35rem;
   border-radius: var(--radius-full);
   background: var(--error);
-  color: #ffffff;
+  color: var(--on-accent);
   text-decoration: none;
   font-size: 0.85rem;
   font-weight: 700;
@@ -1156,3 +1161,99 @@ body {
   border-top: 1px solid var(--surface-container);
 }
 
+
+
+/* ==========================================================================
+   Theme toggle + language switcher (header)
+   ========================================================================== */
+.theme-toggle-btn {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  padding: 0;
+  border: 1px solid var(--outline-variant);
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface-container-high);
+  color: var(--on-surface);
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+.theme-toggle-btn svg { flex-shrink: 0; }
+.theme-toggle-btn:hover { transform: rotate(-12deg); }
+.theme-toggle-btn:focus-visible,
+.lang-switch-btn:focus-visible { outline: 2px solid var(--secondary); outline-offset: 2px; }
+
+.lang-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  border-radius: var(--radius-full);
+  background: var(--surface-container-high);
+  border: 1px solid var(--outline-variant);
+}
+.lang-switch-btn {
+  min-width: 38px;
+  height: 28px;
+  padding: 0 0.6rem;
+  border: none;
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: var(--on-surface-variant);
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.lang-switch-btn:hover { color: var(--on-surface); }
+.lang-switch-btn.active {
+  background: var(--primary);
+  color: var(--on-accent);
+}
+
+/* Sinhala and Tamil text runs longer: let the header tabs wrap politely */
+html[lang="si"] .nav-tab,
+html[lang="ta"] .nav-tab { font-size: 0.8rem; }
+
+/* Light mode: amber "Suspicious" labels need darker text to stay readable */
+:root:not([data-theme="dark"]) .verdict-banner.Suspicious .verdict-tag { color: #451a03; }
+:root:not([data-theme="dark"]) .verdict-banner.Suspicious .donut-status { color: #b45309; }
+
+
+/* ==========================================================================
+   Mobile / tablet header: brand + controls on top, tabs on their own row
+   ========================================================================== */
+@media (max-width: 1100px) {
+  .navbar-inner {
+    height: auto;
+    flex-wrap: wrap;
+    padding-top: 0.6rem;
+    padding-bottom: 0.6rem;
+    row-gap: 0.6rem;
+  }
+  .nav-tabs {
+    order: 3;
+    width: 100%;
+    overflow-x: auto;
+    justify-content: flex-start;
+    scrollbar-width: none;
+  }
+  .nav-tabs::-webkit-scrollbar { display: none; }
+  .nav-tab { flex: 1 0 auto; justify-content: center; white-space: nowrap; }
+  .model-pill-badge { display: none; }
+}
+@media (max-width: 560px) {
+  .navbar-inner { padding-left: 0.85rem; padding-right: 0.85rem; }
+  .brand-text span { display: none; }
+  .brand-text h1 { font-size: 1rem; white-space: nowrap; }
+  .brand-icon-wrapper { width: 34px; height: 34px; }
+  .header-controls { gap: 0.4rem; }
+  .cert-pill { padding: 0.35rem 0.6rem; font-size: 0.72rem; }
+  .lang-switch-btn { min-width: 32px; padding: 0 0.45rem; }
+  .theme-toggle-btn { width: 32px; height: 32px; }
+  .footer-inner, .footer-inner > div { flex-wrap: wrap; row-gap: 0.4rem; }
+}

@@ -14,8 +14,18 @@ import Monitor from './pages/Monitor';
 import Review from './pages/Review';
 import AlertBanner from './components/AlertBanner';
 import { API_URL } from './config';
+import { LanguageProvider, useLang, LANGS } from './i18n';
 
 export default function App() {
+  return (
+    <LanguageProvider>
+      <AppShell />
+    </LanguageProvider>
+  );
+}
+
+function AppShell() {
+  const { lang, setLang, t } = useLang();
   const [activeTab, setActiveTab] = useState('check');
   const [theme, setTheme] = useState('light'); // Default to Civic Shield Light mode
   const [health, setHealth] = useState({ model_version: 'tfidf-7c2b6d2d', model_loaded: true });
@@ -85,7 +95,7 @@ export default function App() {
             </div>
             <div className="brand-text">
               <h1>ScamRadar LK</h1>
-              <span>AI Scam Guardian for Sri Lanka</span>
+              <span>{t('brand.tagline')}</span>
             </div>
           </div>
 
@@ -96,21 +106,21 @@ export default function App() {
               className={`nav-tab ${activeTab === 'check' ? 'active' : ''}`}
               onClick={() => setActiveTab('check')}
             >
-              Check Message
+              {t('nav.check')}
             </button>
             <button
               type="button"
               className={`nav-tab ${activeTab === 'monitor' ? 'active' : ''}`}
               onClick={() => setActiveTab('monitor')}
             >
-              Drift Monitor
+              {t('nav.monitor')}
             </button>
             <button
               type="button"
               className={`nav-tab ${activeTab === 'review' ? 'active' : ''}`}
               onClick={() => setActiveTab('review')}
             >
-              Review Queue {reviewCount > 0 ? `(${reviewCount})` : ''}
+              {t('nav.review')} {reviewCount > 0 ? `(${reviewCount})` : ''}
             </button>
           </nav>
 
@@ -122,31 +132,38 @@ export default function App() {
               <span>{health.model_version || 'tfidf-7c2b6d2d'}</span>
             </div>
 
-            {/* 1919 Emergency Pill */}
-            <a href="tel:1919" className="cert-pill" title="National CERT Emergency Hotline">
+            {/* Sri Lanka CERT hotline (101) */}
+            <a href="tel:101" className="cert-pill" title={t('header.certTitle')}>
               <Phone size={13} />
-              <span>1919 CERT</span>
+              <span>{t('header.cert')}</span>
             </a>
 
-            {/* Theme / User Action */}
+            {/* Language switcher: English / සිංහල / தமிழ் */}
+            <div className="lang-switch" role="group" aria-label={t('lang.label')}>
+              {LANGS.map((l) => (
+                <button
+                  key={l.code}
+                  type="button"
+                  lang={l.code}
+                  className={`lang-switch-btn ${lang === l.code ? 'active' : ''}`}
+                  onClick={() => setLang(l.code)}
+                  aria-pressed={lang === l.code}
+                  title={l.name}
+                >
+                  {l.short}
+                </button>
+              ))}
+            </div>
+
+            {/* Theme toggle */}
             <button
               type="button"
-              className="source-pill-btn"
+              className="theme-toggle-btn"
               onClick={toggleTheme}
-              style={{
-                width: '34px',
-                height: '34px',
-                borderRadius: '50%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                background: 'var(--surface-container-high)',
-                color: 'var(--on-surface)',
-                cursor: 'pointer'
-              }}
-              title={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} Mode`}
+              title={theme === 'dark' ? t('theme.toLight') : t('theme.toDark')}
+              aria-label={theme === 'dark' ? t('theme.toLight') : t('theme.toDark')}
             >
-              {theme === 'dark' ? <Sun size={15} /> : <Moon size={15} />}
+              {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
             </button>
           </div>
         </div>
@@ -168,14 +185,14 @@ export default function App() {
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
             <strong style={{ color: 'var(--primary)' }}>ScamRadar LK</strong>
             <span>•</span>
-            <span>National AI-Assisted Threat Surveillance & Public Verification</span>
+            <span>{t('footer.tagline')}</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
             <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.78rem' }}>
-              Checkpoint: {health.model_version || 'tfidf-7c2b6d2d'}
+              {t('footer.model')}: {health.model_version || 'tfidf-7c2b6d2d'}
             </span>
-            <span>SL-CERT Escalation: 1919</span>
-            <span>© 2026 ScamRadar LK. Open Civic Security.</span>
+            <span>{t('footer.report')}</span>
+            <span>© 2026 Team Paradox · MIT</span>
           </div>
         </div>
       </footer>

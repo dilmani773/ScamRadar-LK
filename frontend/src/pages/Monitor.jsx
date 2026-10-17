@@ -222,7 +222,7 @@ export default function Monitor({ onNavigateReview }) {
               height: '44px',
               borderRadius: '50%',
               background: 'var(--error)',
-              color: '#ffffff',
+              color: 'var(--on-accent)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -263,7 +263,7 @@ export default function Monitor({ onNavigateReview }) {
               padding: '0.75rem 1.5rem',
               borderRadius: '9999px',
               background: 'var(--error)',
-              color: '#ffffff',
+              color: 'var(--on-accent)',
               border: 'none',
               fontWeight: 700,
               fontSize: '0.9rem',
@@ -376,7 +376,7 @@ export default function Monitor({ onNavigateReview }) {
                 height: '36px',
                 borderRadius: '50%',
                 background: 'var(--error)',
-                color: '#ffffff',
+                color: 'var(--on-accent)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center'
@@ -686,7 +686,8 @@ export default function Monitor({ onNavigateReview }) {
                     const d = payload[0].payload;
                     return (
                       <div style={{
-                        background: '#ffffff',
+                        background: 'var(--surface-container-lowest)',
+                        color: 'var(--on-surface)',
                         border: '1px solid var(--outline-variant)',
                         borderRadius: '0.75rem',
                         padding: '0.75rem 1rem',
@@ -779,7 +780,7 @@ export default function Monitor({ onNavigateReview }) {
               </span>
             </div>
             <p style={{ fontSize: '0.85rem', color: 'var(--on-surface-variant)', marginTop: '0.25rem' }}>
-              <strong>Unlabelled drift samples</strong> pending human validation before TF-IDF & sentence transformer re-fit. Retraining pipeline will auto-verify on holdout split with required &gt;0.92 F1 before checkpoint replacement.
+              <strong>Unlabelled drift samples</strong> pending human validation before TF-IDF & sentence transformer re-fit. The new model is promoted only if held-out macro-F1 stays within 0.01 of the current model and accuracy on the never-reviewed shifted_eval set does not drop.
             </p>
           </div>
         </div>
@@ -791,7 +792,7 @@ export default function Monitor({ onNavigateReview }) {
             padding: '0.8rem 1.75rem',
             borderRadius: '9999px',
             background: 'var(--primary)',
-            color: '#ffffff',
+            color: 'var(--on-accent)',
             border: 'none',
             fontSize: '0.9rem',
             fontWeight: 700,
@@ -804,7 +805,7 @@ export default function Monitor({ onNavigateReview }) {
         </button>
       </section>
 
-      {/* Civic Telemetry Federation Strip */}
+      {/* Where to report scams */}
       <section style={{
         padding: '1.25rem 1.5rem',
         borderRadius: '1rem',
@@ -830,19 +831,18 @@ export default function Monitor({ onNavigateReview }) {
           </div>
           <div>
             <strong style={{ display: 'block', fontSize: '0.9rem', color: 'var(--primary)' }}>
-              SL-CERT Telemetry Federation
+              Report scams to Sri Lanka CERT
             </strong>
             <span style={{ fontSize: '0.78rem', color: 'var(--on-surface-variant)' }}>
-              Real-time threat feeds mirror to Sri Lanka Computer Emergency Readiness Team (1919 hotline).
+              Hotline 101 or cert.gov.lk. ScamRadar does not send any data to CERT automatically.
             </span>
           </div>
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontFamily: 'var(--font-mono)', fontSize: '0.78rem', color: 'var(--on-surface-variant)' }}>
-          <span>SHA-256 Digest:</span>
-          <span style={{ background: 'var(--surface-container-lowest)', padding: '0.2rem 0.6rem', borderRadius: '0.35rem', fontWeight: 700, color: 'var(--on-surface)' }}>
-            d98a...4b01
-          </span>
+          <a href="tel:101" style={{ background: 'var(--surface-container-lowest)', padding: '0.2rem 0.6rem', borderRadius: '0.35rem', fontWeight: 700, color: 'var(--on-surface)', textDecoration: 'none' }}>
+            CERT 101
+          </a>
         </div>
       </section>
     </div>

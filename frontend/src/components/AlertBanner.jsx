@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { API_URL } from '../config';
+import { useLang } from '../i18n';
 import './AlertBanner.css';
 
 /**
@@ -12,6 +13,7 @@ export default function AlertBanner({ apiBaseUrl = API_URL, onNavigateReview }) 
   const [driftStatus, setDriftStatus] = useState(null);
   const [isDismissed, setIsDismissed] = useState(false);
   const [loading, setLoading] = useState(true);
+  const { t, has } = useLang();
 
   const fetchAlerts = async () => {
     try {
@@ -45,23 +47,26 @@ export default function AlertBanner({ apiBaseUrl = API_URL, onNavigateReview }) 
 
   const activeAlert = alerts[0];
   const signalName = activeAlert ? activeAlert.signal.replace(/_/g, ' ').toUpperCase() : 'NOVEL TACTIC DETECTED';
-  const signalMsg = activeAlert ? activeAlert.message : (driftStatus?.response || 'Safe fallback active: Unfamiliar messages marked Suspicious and sent to human review.');
+  const signalKey = activeAlert ? `sig.${activeAlert.signal}` : null;
+  const signalMsg = signalKey && has(signalKey)
+    ? t(signalKey)
+    : (activeAlert ? activeAlert.message : (driftStatus?.response || 'Safe fallback active: Unfamiliar messages marked Suspicious and sent to human review.'));
 
   return (
     <aside className="scamradar-alert-banner" role="alert" aria-live="assertive">
       <div className="alert-content-container">
         <div className="alert-badge-group">
           <span className="pulse-indicator"></span>
-          <span className="alert-badge">⚠️ DRIFT DETECTED · FALLBACK ACTIVE</span>
+          <span className="alert-badge">⚠️ {t('banner.badge')}</span>
           <span className="signal-tag">{signalName}</span>
         </div>
 
         <div className="alert-message-text">
           <p className="main-warning">
-            <strong>නව වංචා රටාවක් හඳුනාගෙන ඇත:</strong> {signalMsg}
+            <strong>{t('banner.title')}</strong> {signalMsg}
           </p>
           <p className="sub-warning">
-            The system identified a significant divergence from baseline patterns. Safe fallback is redirecting unfamiliar messages to the review queue.
+            {t('banner.sub')}
           </p>
         </div>
 
@@ -72,18 +77,18 @@ export default function AlertBanner({ apiBaseUrl = API_URL, onNavigateReview }) 
               className="alert-review-btn"
               onClick={onNavigateReview}
             >
-              සමාලෝචන පෝලිම (Review Queue) →
+              {t('banner.reviewBtn')}
             </button>
           ) : (
             <a href="#review" className="alert-review-btn">
-              Review Queue →
+              {t('banner.reviewBtn')}
             </a>
           )}
           <button 
             type="button" 
             className="alert-dismiss-btn"
             onClick={() => setIsDismissed(true)}
-            aria-label="Close Alert Banner"
+            aria-label={t('banner.close')}
           >
             ✕
           </button>

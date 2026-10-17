@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import { API_URL } from '../config';
 import { normalizeCheckResult, evaluateOfflineRules } from '../utils/apiResilience';
+import { useLang } from '../i18n';
 
 // Compliant Synthetic Presets (with 07X-XXX-XXXX & fictional institutions)
 const SYNTHETIC_PRESETS = [
@@ -74,10 +75,11 @@ const SCAM_TYPE_LABELS = {
   fake_job: { name: 'Employment / Deposit Scam', subtext: 'Demands advance registration fees for work-from-home offers' },
   loan_app: { name: 'Predatory Instant Loan Fraud', subtext: 'Promotes unverified APK apps seeking device access' },
   investment_scheme: { name: 'Pyramid / Double-Money Fraud', subtext: 'Guarantees unrealistic returns on informal crypto or pyramid tiers' },
-  legit: { name: 'Standard Transaction Alert', subtext: 'Official informational notice complying with Central Bank guidelines' }
+  legit: { name: 'Standard Transaction Alert', subtext: 'Looks like a normal notification; no scam pattern matched' }
 };
 
 export default function Check() {
+  const { lang, t, has } = useLang();
   const [text, setText] = useState(
     'Aswesuma 2nd stage relief fund approved. Your NIC has been selected to claim Rs. 15,000 cash grant directly to your bank. Confirm details now: https://aswesuma-gov-claim.xyz/portal'
   );
@@ -146,7 +148,7 @@ export default function Check() {
 
   const handleCopySummary = () => {
     if (!result) return;
-    const summary = `ScamRadar LK Analysis Summary:\nVerdict: ${result.verdict}\nClassification: ${result.scam_type}\nRisk: ${Math.round(result.risk * 100)}%\nAdvice: ${result.advice}\nCheck Hotline: 1919 (GIC Sri Lanka)`;
+    const summary = `ScamRadar LK Analysis Summary:\nVerdict: ${result.verdict}\nClassification: ${result.scam_type}\nRisk: ${Math.round(result.risk * 100)}%\nAdvice: ${result.advice}\nReport scams: Sri Lanka CERT hotline 101 / cert.gov.lk`;
     navigator.clipboard.writeText(summary);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
@@ -161,23 +163,36 @@ export default function Check() {
     ? Math.round((isSafe ? (result.confidence || 0.95) : (result.risk || 0.9)) * 100) 
     : 0;
 
-  const langMeta = LANGUAGE_LABELS[result?.language] || {
-    name: (result?.language || 'English').toUpperCase(),
-    subtext: 'Linguistic patterns evaluated across national vernaculars'
-  };
+  const langMeta = LANGUAGE_LABELS[result?.language]
+    ? { name: t(`lang.${result.language}.name`), subtext: t(`lang.${result.language}.sub`) }
+    : {
+      name: (result?.language || 'English').toUpperCase(),
+      subtext: 'Linguistic patterns evaluated across national vernaculars'
+    };
 
-  const scamTypeMeta = SCAM_TYPE_LABELS[result?.scam_type] || {
-    name: (result?.scam_type || 'Potential Threat').replace(/_/g, ' '),
-    subtext: 'Pattern matched against threat intelligence taxonomy'
-  };
+  const scamTypeMeta = SCAM_TYPE_LABELS[result?.scam_type]
+    ? { name: t(`type.${result.scam_type}.name`), subtext: t(`type.${result.scam_type}.sub`) }
+    : (lang === 'en'
+      ? {
+        name: (result?.scam_type || 'Potential Threat').replace(/_/g, ' '),
+        subtext: 'Pattern matched against threat intelligence taxonomy'
+      }
+      : { name: t('type.unknown.name'), subtext: t('type.unknown.sub') });
+
+  // Red-flag reasons and advice come from the API in English; show local text for සිංහල / தமிழ்
+  const flagReason = (flag) => (lang !== 'en' && has(`reason.${flag.flag}`) ? t(`reason.${flag.flag}`) : flag.reason);
+  const flagTitle = (flag) => (lang === 'en'
+    ? flag.flag.replace(/_/g, ' ').toUpperCase()
+    : (has(`flag.${flag.flag}`) ? t(`flag.${flag.flag}`) : flag.flag.replace(/_/g, ' ')));
+  const adviceText = result && lang !== 'en' && has(`advice.${result.verdict}`) ? t(`advice.${result.verdict}`) : result?.advice;
 
   // Detect link indicator in text or flags
   const linkFlag = result?.red_flags?.find(f => f.flag === 'link');
   const domainMeta = linkFlag 
-    ? { title: 'Unverified Domain Link', subtext: linkFlag.reason, isThreat: true }
+    ? { title: t('domain.link.title'), subtext: flagReason(linkFlag), isThreat: true }
     : (isSafe 
-      ? { title: 'No Suspicious Links Included', subtext: 'Safe plain-text SMS without phishing hyperlinks', isThreat: false }
-      : { title: 'Credential / Direct Threat', subtext: 'Demands direct action or sensitive authentication codes', isThreat: true });
+      ? { title: t('domain.none.title'), subtext: t('domain.none.sub'), isThreat: false }
+      : { title: t('domain.direct.title'), subtext: t('domain.direct.sub'), isThreat: true });
 
   return (
     <div className="check-page-wrapper">
@@ -190,20 +205,18 @@ export default function Check() {
       <section className="hero">
         <div className="hero-pill-badge">
           <Shield size={16} className="hero-badge-icon" />
-          <span>Multilingual Threat Intelligence • Sri Lanka</span>
+          <span>{t('hero.badge')}</span>
         </div>
-        <h1>Verify Suspicious Messages Instantly</h1>
-        <p>
-          Paste any SMS or WhatsApp message received on your phone. ScamRadar analyzes Sinhala, Tamil, Singlish, and English to flag fake bank alerts, lottery fraud, Aswesuma scams, and malicious links.
-        </p>
+        <h1>{t('hero.title')}</h1>
+        <p>{t('hero.desc')}</p>
       </section>
 
       {/* Main Verification Card */}
       <div className="verification-card">
         {/* Synthetic Test Examples */}
         <div className="presets-header">
-          <span className="presets-label">Synthetic Test Examples:</span>
-          <span className="presets-hint">Click any sample to populate</span>
+          <span className="presets-label">{t('presets.label')}</span>
+          <span className="presets-hint">{t('presets.hint')}</span>
         </div>
 
         <div className="presets-chips-row">
@@ -215,7 +228,7 @@ export default function Check() {
               onClick={() => handlePresetSelect(p)}
             >
               <span>{p.title}</span>
-              <span className="synthetic-tag">Synthetic</span>
+              <span className="synthetic-tag">{t('presets.tag')}</span>
             </button>
           ))}
         </div>
@@ -224,14 +237,14 @@ export default function Check() {
         <div className="textarea-container">
           <textarea
             className="message-textarea"
-            placeholder='Paste SMS or WhatsApp text here... (e.g. "Lanka Pragathi Bank: Your account has been suspended. Click https://bit.ly/3x9...")'
+            placeholder={t('input.placeholder')}
             value={text}
             onChange={(e) => setText(e.target.value)}
             maxLength={2000}
             rows={5}
           />
           <div className="textarea-bottom-bar">
-            <span>{text.length} / 2000 characters</span>
+            <span>{t('input.chars', { n: text.length })}</span>
             {text.length > 0 && (
               <button 
                 type="button" 
@@ -239,7 +252,7 @@ export default function Check() {
                 onClick={handleClear}
               >
                 <RotateCcw size={13} />
-                <span>Clear</span>
+                <span>{t('input.clear')}</span>
               </button>
             )}
           </div>
@@ -249,7 +262,7 @@ export default function Check() {
         <div className="controls-row">
           {/* Source Toggle */}
           <div className="source-toggle-group">
-            <span className="source-label">Message Source:</span>
+            <span className="source-label">{t('source.label')}</span>
             <div className="source-pills">
               {['SMS', 'WHATSAPP', 'OTHER'].map((src) => (
                 <button
@@ -258,7 +271,7 @@ export default function Check() {
                   className={`source-pill-btn ${channel === src ? 'active' : ''}`}
                   onClick={() => setChannel(src)}
                 >
-                  {src}
+                  {src === 'OTHER' ? t('source.OTHER') : src}
                 </button>
               ))}
             </div>
@@ -272,7 +285,7 @@ export default function Check() {
             onClick={handleAnalyze}
           >
             <Send size={17} className={loading ? 'spin' : ''} />
-            <span>{loading ? 'Scanning Threat Vectors...' : 'Analyze Message'}</span>
+            <span>{loading ? t('analyze.busy') : t('analyze.btn')}</span>
           </button>
         </div>
       </div>
@@ -292,7 +305,7 @@ export default function Check() {
           gap: '0.5rem'
         }}>
           <AlertCircle size={18} />
-          <span>Local Heuristic Fallback Active: Backend service is updating. Showing client-side rule evaluation.</span>
+          <span>{t('offline.notice')}</span>
         </div>
       )}
 
@@ -311,14 +324,14 @@ export default function Check() {
                 <div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                     <span className="verdict-tag">
-                      {isScam ? 'High Risk Scam' : (isSuspicious ? 'Suspicious Pattern' : 'Verified Legitimate')}
+                      {t(`verdict.tag.${result.verdict}`)}
                     </span>
-                    <span className="verdict-latency">Checked in {latency}</span>
+                    <span className="verdict-latency">{t('verdict.checkedIn', { t: latency })}</span>
                   </div>
                   <h3 className="verdict-banner-title">
-                    {isScam && `Critical Threat Probability: ${Math.round(result.risk * 100)}%`}
-                    {isSuspicious && `Unverified / Suspicious Threat: ${Math.round(result.risk * 100)}%`}
-                    {isSafe && `Legitimate Transaction Notice: ${Math.round((result.confidence || 0.98) * 100)}% Safe`}
+                    {isScam && t('verdict.title.Scam', { p: Math.round(result.risk * 100) })}
+                    {isSuspicious && t('verdict.title.Suspicious', { p: Math.round(result.risk * 100) })}
+                    {isSafe && t('verdict.title.Safe', { p: Math.round((result.confidence || 0.98) * 100) })}
                   </h3>
                 </div>
               </div>
@@ -346,10 +359,10 @@ export default function Check() {
                 </div>
                 <div className="donut-info">
                   <span className="donut-label">
-                    {isSafe ? 'Confidence' : 'Threat Level'}
+                    {isSafe ? t('donut.confidence') : t('donut.threat')}
                   </span>
                   <span className="donut-status">
-                    {isScam ? 'Immediate Hazard' : (isSuspicious ? 'Uncertain Pattern' : 'No Threat Found')}
+                    {t(`donut.status.${result.verdict}`)}
                   </span>
                 </div>
               </div>
@@ -360,7 +373,7 @@ export default function Check() {
               {/* Detected Script */}
               <div className="detail-card">
                 <div className="detail-card-top">
-                  <span className="detail-label">Detected Script</span>
+                  <span className="detail-label">{t('detail.script')}</span>
                   <Languages size={18} color="var(--secondary)" />
                 </div>
                 <div>
@@ -372,7 +385,7 @@ export default function Check() {
               {/* Threat Classification */}
               <div className="detail-card">
                 <div className="detail-card-top">
-                  <span className="detail-label">Threat Classification</span>
+                  <span className="detail-label">{t('detail.type')}</span>
                   <Gavel size={18} color={isSafe ? 'var(--secondary)' : 'var(--error)'} />
                 </div>
                 <div>
@@ -384,7 +397,7 @@ export default function Check() {
               {/* Domain / Threat Indicator */}
               <div className="detail-card">
                 <div className="detail-card-top">
-                  <span className="detail-label">Threat Indicator</span>
+                  <span className="detail-label">{t('detail.indicator')}</span>
                   <Link2Off size={18} color={domainMeta.isThreat ? 'var(--error)' : 'var(--secondary)'} />
                 </div>
                 <div>
@@ -400,7 +413,7 @@ export default function Check() {
             <div className="ai-breakdown-card">
               <div className="ai-breakdown-header">
                 <BrainCircuit size={19} />
-                <span>Citizen Safety Breakdown • AI Explanation</span>
+                <span>{t('breakdown.title')}</span>
               </div>
               <ul className="ai-reasons-list">
                 {result.red_flags && result.red_flags.length > 0 ? (
@@ -408,8 +421,8 @@ export default function Check() {
                     <li key={idx} className="ai-reason-item">
                       <XCircle size={18} color="var(--error)" style={{ flexShrink: 0, marginTop: '2px' }} />
                       <span>
-                        <strong>{flag.flag.replace(/_/g, ' ').toUpperCase()}: </strong>
-                        {flag.reason}
+                        <strong>{flagTitle(flag)}: </strong>
+                        {flagReason(flag)}
                       </span>
                     </li>
                   ))
@@ -418,13 +431,13 @@ export default function Check() {
                     <li className="ai-reason-item">
                       <CheckCircle2 size={18} color="var(--safe)" style={{ flexShrink: 0, marginTop: '2px' }} />
                       <span>
-                        <strong>Standard Notification Format:</strong> Conforms strictly with Central Bank of Sri Lanka (CBSL) transaction guidelines.
+                        <strong>{t('safe.r1.title')}</strong> {t('safe.r1.text')}
                       </span>
                     </li>
                     <li className="ai-reason-item">
                       <CheckCircle2 size={18} color="var(--safe)" style={{ flexShrink: 0, marginTop: '2px' }} />
                       <span>
-                        <strong>No Credentials Demanded:</strong> Does not request card details, PINs, or One-Time Passwords (OTPs).
+                        <strong>{t('safe.r2.title')}</strong> {t('safe.r2.text')}
                       </span>
                     </li>
                   </>
@@ -439,8 +452,8 @@ export default function Check() {
                   <Shield size={20} />
                 </div>
                 <div className="action-protocol-text">
-                  <h5>What should you do now?</h5>
-                  <p>{result.advice}</p>
+                  <h5>{t('action.title')}</h5>
+                  <p>{adviceText}</p>
                 </div>
               </div>
 
@@ -451,12 +464,12 @@ export default function Check() {
                   onClick={handleCopySummary}
                 >
                   {copied ? <CheckIcon size={16} color="var(--safe)" /> : <Copy size={16} />}
-                  <span>{copied ? 'Copied!' : 'Copy Summary'}</span>
+                  <span>{copied ? t('action.copied') : t('action.copy')}</span>
                 </button>
 
-                <a href="tel:1919" className="btn-call-cert">
+                <a href="tel:101" className="btn-call-cert">
                   <Phone size={16} />
-                  <span>Call 1919 CERT</span>
+                  <span>{t('action.call')}</span>
                 </a>
               </div>
             </div>
@@ -469,7 +482,7 @@ export default function Check() {
                 <Cpu size={20} />
               </div>
               <div className="context-box-text">
-                <span className="context-box-label">Model Checkpoint</span>
+                <span className="context-box-label">{t('ctx.model')}</span>
                 <p>{result.model_version || 'tfidf-7c2b6d2d'} (Production)</p>
               </div>
             </div>
@@ -479,8 +492,8 @@ export default function Check() {
                 <Activity size={20} />
               </div>
               <div className="context-box-text">
-                <span className="context-box-label">National Threat Index</span>
-                <p>Elevated (SL-UDI Scam Wave #4)</p>
+                <span className="context-box-label">{t('ctx.rule')}</span>
+                <p>{t('ctx.ruleValue')}</p>
               </div>
             </div>
 
@@ -489,8 +502,8 @@ export default function Check() {
                 <Sparkles size={20} />
               </div>
               <div className="context-box-text">
-                <span className="context-box-label">Reviewed By Experts</span>
-                <p>SL-CERT / LK Domain Registry</p>
+                <span className="context-box-label">{t('ctx.report')}</span>
+                <p>{t('ctx.reportValue')}</p>
               </div>
             </div>
           </div>

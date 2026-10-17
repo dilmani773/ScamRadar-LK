@@ -2,10 +2,10 @@
 
 .scamradar-alert-banner {
   width: 100%;
-  background: linear-gradient(90deg, rgba(239, 68, 68, 0.15) 0%, rgba(245, 158, 11, 0.2) 100%);
+  background: linear-gradient(90deg, #fee2e2 0%, #fef3c7 100%);
   border-bottom: 2px solid #ef4444;
   backdrop-filter: blur(8px);
-  color: #f9fafb;
+  color: #450a0a;
   padding: 12px 20px;
   box-shadow: 0 4px 20px rgba(239, 68, 68, 0.25);
   position: relative;
@@ -77,8 +77,8 @@
 
 .signal-tag {
   background-color: rgba(245, 158, 11, 0.25);
-  border: 1px solid #f59e0b;
-  color: #fbbf24;
+  border: 1px solid #d97706;
+  color: #92400e;
   font-size: 0.72rem;
   font-weight: 600;
   padding: 3px 7px;
@@ -94,13 +94,13 @@
   margin: 0;
   font-size: 0.88rem;
   line-height: 1.4;
-  color: #fee2e2;
+  color: #7f1d1d;
 }
 
 .alert-message-text .sub-warning {
   margin: 2px 0 0 0;
   font-size: 0.76rem;
-  color: #d1d5db;
+  color: #57534e;
   line-height: 1.3;
 }
 
@@ -133,7 +133,7 @@
 .alert-dismiss-btn {
   background: transparent;
   border: none;
-  color: #9ca3af;
+  color: #6b7280;
   font-size: 1.1rem;
   cursor: pointer;
   padding: 4px 8px;
@@ -142,8 +142,19 @@
 }
 
 .alert-dismiss-btn:hover {
-  color: #ffffff;
+  color: #111827;
 }
+
+/* Dark mode: keep the original light-on-dark colours */
+[data-theme="dark"] .scamradar-alert-banner {
+  background: linear-gradient(90deg, rgba(239, 68, 68, 0.15) 0%, rgba(245, 158, 11, 0.2) 100%);
+  color: #f9fafb;
+}
+[data-theme="dark"] .signal-tag { border-color: #f59e0b; color: #fbbf24; }
+[data-theme="dark"] .alert-message-text .main-warning { color: #fee2e2; }
+[data-theme="dark"] .alert-message-text .sub-warning { color: #d1d5db; }
+[data-theme="dark"] .alert-dismiss-btn { color: #9ca3af; }
+[data-theme="dark"] .alert-dismiss-btn:hover { color: #ffffff; }
 
 @media (max-width: 768px) {
   .alert-content-container {

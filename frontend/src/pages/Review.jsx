@@ -158,7 +158,7 @@ export default function Review() {
                 padding: '0.85rem 1.75rem',
                 borderRadius: '9999px',
                 background: 'var(--secondary)',
-                color: '#ffffff',
+                color: 'var(--on-accent)',
                 border: 'none',
                 fontSize: '0.925rem',
                 fontWeight: 700,
@@ -173,7 +173,7 @@ export default function Review() {
 
             <span style={{ fontSize: '0.78rem', color: 'var(--on-surface-variant)', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
               <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--secondary)' }} />
-              Automated gating threshold: F1 ≥ 0.940
+              Gate: held-out macro-F1 may drop by 0.01 at most · shifted_eval accuracy must not drop
             </span>
           </div>
         </div>
@@ -275,7 +275,7 @@ export default function Review() {
                 fontWeight: 600,
                 cursor: 'pointer',
                 background: activeFilter === f.id ? 'var(--primary)' : 'var(--surface-container)',
-                color: activeFilter === f.id ? '#ffffff' : 'var(--on-surface-variant)',
+                color: activeFilter === f.id ? 'var(--on-accent)' : 'var(--on-surface-variant)',
                 boxShadow: activeFilter === f.id ? 'var(--shadow-sm)' : 'none',
                 transition: 'all 0.15s ease'
               }}
@@ -473,10 +473,10 @@ export default function Review() {
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-            <button type="button" disabled style={{ padding: '0.35rem 0.75rem', borderRadius: '9999px', background: 'var(--surface)', border: 'none', cursor: 'not-allowed', opacity: 0.5 }}>
+            <button type="button" disabled style={{ padding: '0.35rem 0.75rem', borderRadius: '9999px', background: 'var(--surface)', color: 'var(--on-surface)', border: 'none', cursor: 'not-allowed', opacity: 0.5 }}>
               Previous
             </button>
-            <button type="button" style={{ width: '30px', height: '30px', borderRadius: '50%', background: 'var(--primary)', color: '#ffffff', border: 'none', fontWeight: 700 }}>
+            <button type="button" style={{ width: '30px', height: '30px', borderRadius: '50%', background: 'var(--primary)', color: 'var(--on-accent)', border: 'none', fontWeight: 700 }}>
               1
             </button>
             <button type="button" style={{ width: '30px', height: '30px', borderRadius: '50%', background: 'var(--surface)', color: 'var(--on-surface)', border: 'none', fontWeight: 600 }}>
@@ -485,7 +485,7 @@ export default function Review() {
             <button type="button" style={{ width: '30px', height: '30px', borderRadius: '50%', background: 'var(--surface)', color: 'var(--on-surface)', border: 'none', fontWeight: 600 }}>
               3
             </button>
-            <button type="button" style={{ padding: '0.35rem 0.75rem', borderRadius: '9999px', background: 'var(--surface)', border: 'none', cursor: 'pointer' }}>
+            <button type="button" style={{ padding: '0.35rem 0.75rem', borderRadius: '9999px', background: 'var(--surface)', color: 'var(--on-surface)', border: 'none', cursor: 'pointer' }}>
               Next
             </button>
           </div>
