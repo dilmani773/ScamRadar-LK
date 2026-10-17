@@ -11,6 +11,8 @@ import {
 } from 'lucide-react';
 import Check from './pages/Check';
 import Monitor from './pages/Monitor';
+import Review from './pages/Review';
+import AlertBanner from './components/AlertBanner';
 import { API_URL } from './config';
 
 export default function App() {
@@ -159,109 +161,14 @@ export default function App() {
         </div>
       </header>
 
+      {/* Global Drift Alert Banner */}
+      <AlertBanner onNavigateReview={() => setActiveTab('review')} />
+
       {/* Main Dynamic View */}
       <main className="main-content">
         {activeTab === 'check' && <Check />}
         {activeTab === 'monitor' && <Monitor />}
-        
-        {/* Review Queue Tab (Collaborative slot for Hareen / Analyst) */}
-        {activeTab === 'review' && (
-          <div className="review-page">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
-              <div>
-                <h2 style={{ fontSize: '1.8rem', fontWeight: 800 }}>Human-in-the-Loop Review Queue</h2>
-                <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem' }}>
-                  Messages flagged by the safe-fallback due to novelty or low confidence. Label them to retrain and adapt the model.
-                </p>
-              </div>
-              <button
-                type="button"
-                className="btn-primary"
-                onClick={handleRetrain}
-                disabled={retraining}
-              >
-                <RefreshCw size={16} className={retraining ? 'spin' : ''} />
-                <span>{retraining ? 'Retraining Model...' : 'Retrain & Gate Model'}</span>
-              </button>
-            </div>
-
-            {retrainStatus && (
-              <div className="card" style={{ marginBottom: '1.5rem', borderLeft: '4px solid var(--color-safe)' }}>
-                <strong>Retraining Triggered:</strong> Status: {retrainStatus.status}
-              </div>
-            )}
-
-            <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
-              {reviewItems.length > 0 ? (
-                <div style={{ overflowX: 'auto' }}>
-                  <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.875rem' }}>
-                    <thead style={{ background: 'var(--bg-surface-elevated)', borderBottom: '1px solid var(--border-subtle)' }}>
-                      <tr>
-                        <th style={{ padding: '0.85rem 1rem' }}>ID</th>
-                        <th style={{ padding: '0.85rem 1rem' }}>Message Text</th>
-                        <th style={{ padding: '0.85rem 1rem' }}>Lang</th>
-                        <th style={{ padding: '0.85rem 1rem' }}>Verdict</th>
-                        <th style={{ padding: '0.85rem 1rem' }}>Confidence</th>
-                        <th style={{ padding: '0.85rem 1rem' }}>Novelty</th>
-                        <th style={{ padding: '0.85rem 1rem', textAlign: 'right' }}>Quick Label</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {reviewItems.map((item) => (
-                        <tr key={item.id} style={{ borderBottom: '1px solid var(--border-subtle)' }}>
-                          <td style={{ padding: '0.85rem 1rem', fontFamily: 'var(--font-mono)' }}>#{item.id}</td>
-                          <td style={{ padding: '0.85rem 1rem', maxWidth: '300px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                            {item.text}
-                          </td>
-                          <td style={{ padding: '0.85rem 1rem', textTransform: 'uppercase' }}>{item.language}</td>
-                          <td style={{ padding: '0.85rem 1rem' }}>
-                            <span style={{ 
-                              padding: '0.2rem 0.5rem', 
-                              borderRadius: '9999px', 
-                              fontSize: '0.75rem', 
-                              fontWeight: 700,
-                              background: item.verdict === 'Scam' ? 'var(--color-scam-bg)' : 'var(--color-suspicious-bg)',
-                              color: item.verdict === 'Scam' ? 'var(--color-scam)' : 'var(--color-suspicious)'
-                            }}>
-                              {item.verdict}
-                            </span>
-                          </td>
-                          <td style={{ padding: '0.85rem 1rem', fontFamily: 'var(--font-mono)' }}>{item.confidence ? (item.confidence * 100).toFixed(0) + '%' : '-'}</td>
-                          <td style={{ padding: '0.85rem 1rem', fontFamily: 'var(--font-mono)' }}>{item.novelty ? (item.novelty * 100).toFixed(0) + '%' : '-'}</td>
-                          <td style={{ padding: '0.85rem 1rem', textAlign: 'right' }}>
-                            <div style={{ display: 'inline-flex', gap: '0.4rem' }}>
-                              <button
-                                type="button"
-                                className="btn-secondary"
-                                style={{ padding: '0.25rem 0.6rem', fontSize: '0.75rem' }}
-                                onClick={() => handleLabel(item.id, 'digital_id_scam')}
-                              >
-                                SL-UDI Scam
-                              </button>
-                              <button
-                                type="button"
-                                className="btn-secondary"
-                                style={{ padding: '0.25rem 0.6rem', fontSize: '0.75rem' }}
-                                onClick={() => handleLabel(item.id, 'legit')}
-                              >
-                                Legit
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              ) : (
-                <div style={{ padding: '3rem', textAlign: 'center', color: 'var(--text-muted)' }}>
-                  <p style={{ fontSize: '1rem', marginBottom: '0.5rem' }}>Review queue is currently empty.</p>
-                  <p style={{ fontSize: '0.85rem' }}>Simulate a new scam wave from the Drift Monitor to populate items requiring analyst labeling.</p>
-                </div>
-              )}
-            </div>
-          </div>
-        )}
+        {activeTab === 'review' && <Review />}
       </main>
     </div>
   );
