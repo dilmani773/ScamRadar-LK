@@ -1,7 +1,7 @@
 {
- "version": "e5ens-b6a4a785",
+ "version": "e5ens-ff77c3a2",
  "kind": "ensemble",
- "trained_on": 3000,
+ "trained_on": 3004,
  "test": {
   "n": 600,
   "accuracy": 0.965,
@@ -19,16 +19,16 @@
  },
  "shifted": {
   "n": 100,
-  "accuracy": 0.13,
-  "macro_f1": 0.5446,
-  "scam_recall": 0.957,
+  "accuracy": 0.98,
+  "macro_f1": 0.9286,
+  "scam_recall": 1.0,
   "false_alarm_rate": 0.2857,
   "accuracy_by_language": {
-   "si": 0.0714,
-   "ta": 0.1875,
-   "en": 0.2222,
-   "singlish": 0.2,
-   "tanglish": 0.0312
+   "si": 1.0,
+   "ta": 1.0,
+   "en": 0.8889,
+   "singlish": 1.0,
+   "tanglish": 1.0
   }
  },
  "weights": {
@@ -39,5 +39,10 @@
  "thresholds": {
   "confidence": 0.55,
   "novelty": 0.1275
+ },
+ "gate": {
+  "held_out_not_worse": true,
+  "shifted_not_worse": true,
+  "previous_version": "e5ens-78cfa0c3"
  }
 }
