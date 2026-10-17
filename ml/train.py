@@ -142,6 +142,10 @@ def main():
         shifted = load(data / "shifted.csv")
     if train is None or test is None:
         sys.exit("need data/processed/train.csv and test.csv")
+    extra = load(data / "train_alerts.csv")  # legit bank alerts (ml/legit_alerts.py), training only
+    if extra is not None:
+        train = pd.concat([train, extra[["text", "label", "language"]]], ignore_index=True)
+        print(f"added {len(extra)} legit bank alerts from train_alerts.csv")
 
     v1 = a.v1
     if a.include_reviewed:

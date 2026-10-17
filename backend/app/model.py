@@ -4,6 +4,7 @@ The bundle is written by `python -m ml.train` (see ml/train.py). Until a model e
 using red-flag rules only (model_version "rules-v0"), so the frontend can be built in parallel.
 """
 import os
+import re
 import threading
 from pathlib import Path
 
@@ -12,6 +13,11 @@ import numpy as np
 from sklearn.preprocessing import normalize
 
 from .textutils import LANGUAGE_GROUP, detect_language, red_flags
+
+# A link or a fee / deposit request never appears in our legit data (0 of 1,950 legit messages),
+# but appears in more than half of the scams. A message with one of these is never marked Safe.
+NEVER_SAFE = re.compile(r"(https?://|www\.|bit\.ly|tinyurl|\b[a-z0-9-]+\.(com|lk|xyz|top|info|net)\b|\bfees?\b|deposit|"
+                        r"pay now|send money|gewanna|ගාස්තු|මුදල් එවන්න|பணம் அனுப்)", re.IGNORECASE)
 
 ADVICE = {
     "Scam": "Do not reply, click links or share OTPs. Report it and contact your bank through its official number.",
@@ -82,6 +88,8 @@ class Predictor:
             verdict = "Suspicious"
         else:
             verdict = "Safe"
+        if verdict == "Safe" and NEVER_SAFE.search(text):
+            verdict, needs_review = "Suspicious", True  # safe by design: links and fee requests always need a check
         return {
             "verdict": verdict,
             "scam_type": scam_type if verdict != "Safe" else "legit",
