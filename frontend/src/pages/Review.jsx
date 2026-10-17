@@ -95,6 +95,8 @@ export default function Review() {
     }
   };
 
+  const PAGE_SIZE = 10;
+
   // Filter items
   const filteredItems = items.filter(item => {
     if (activeFilter === 'all') return true;
@@ -106,6 +108,17 @@ export default function Review() {
     if (activeFilter === 'en') return item.language === 'en';
     return true;
   });
+
+  // Reset to page 1 whenever active filter changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [activeFilter]);
+
+  const totalPages = Math.max(1, Math.ceil(filteredItems.length / PAGE_SIZE));
+  const safePage = Math.min(Math.max(1, currentPage), totalPages);
+  const startIndex = (safePage - 1) * PAGE_SIZE;
+  const endIndex = Math.min(startIndex + PAGE_SIZE, filteredItems.length);
+  const paginatedItems = filteredItems.slice(startIndex, endIndex);
 
   const highNoveltyCount = items.filter(i => (i.novelty || 0) > 0.60).length;
   const lowConfCount = items.filter(i => (i.confidence || 0) < 0.50).length;
@@ -335,8 +348,15 @@ export default function Review() {
               </tr>
             </thead>
             <tbody>
-              {filteredItems.map((item) => {
-                const isMarked = markedLabels[item.id];
+              {paginatedItems.length === 0 ? (
+                <tr>
+                  <td colSpan={7} style={{ padding: '3rem 1.5rem', textAlign: 'center', color: 'var(--on-surface-variant)' }}>
+                    {t('rev.empty') || 'No items in this queue category.'}
+                  </td>
+                </tr>
+              ) : (
+                paginatedItems.map((item) => {
+                  const isMarked = markedLabels[item.id];
                 return (
                   <tr 
                     key={item.id} 
@@ -393,15 +413,7 @@ export default function Review() {
                     </td>
 
                     <td style={{ padding: '1rem 1rem', textAlign: 'right', verticalAlign: 'top' }}>
-                      <span style={{
-                        padding: '0.15rem 0.5rem',
-                        borderRadius: '0.35rem',
-                        fontFamily: 'var(--font-mono)',
-                        fontSize: '0.75rem',
-                        fontWeight: 700,
-                        background: (item.novelty || 0) > 0.6 ? 'var(--tertiary-fixed)' : 'var(--surface-container)',
-                        color: (item.novelty || 0) > 0.6 ? 'var(--tertiary)' : 'var(--on-surface-variant)'
-                      }}>
+                      <span className={`novelty-cell-badge ${(item.novelty || 0) > 0.6 ? 'high' : ''}`}>
                         {Math.round((item.novelty || 0.55) * 100)}%
                       </span>
                     </td>
@@ -454,7 +466,7 @@ export default function Review() {
                     </td>
                   </tr>
                 );
-              })}
+              }))}
             </tbody>
           </table>
         </div>
@@ -472,23 +484,46 @@ export default function Review() {
           color: 'var(--on-surface-variant)'
         }}>
           <div>
-            {t('rev.showing', { a: filteredItems.length, b: items.length })}
+            {filteredItems.length > 0 ? (
+              <span>
+                {t('rev.showing', { a: `${startIndex + 1} - ${endIndex}`, b: filteredItems.length })}
+                {filteredItems.length !== items.length && ` (Total: ${items.length})`}
+              </span>
+            ) : (
+              <span>{t('rev.showing', { a: '0', b: '0' })}</span>
+            )}
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-            <button type="button" disabled style={{ padding: '0.35rem 0.75rem', borderRadius: '9999px', background: 'var(--surface)', color: 'var(--on-surface)', border: 'none', cursor: 'not-allowed', opacity: 0.5 }}>
+            <button 
+              type="button" 
+              disabled={safePage <= 1}
+              onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+              className="pagination-arrow-btn"
+              title={t('rev.prev')}
+            >
               {t('rev.prev')}
             </button>
-            <button type="button" style={{ width: '30px', height: '30px', borderRadius: '50%', background: 'var(--primary)', color: 'var(--on-accent)', border: 'none', fontWeight: 700 }}>
-              1
-            </button>
-            <button type="button" style={{ width: '30px', height: '30px', borderRadius: '50%', background: 'var(--surface)', color: 'var(--on-surface)', border: 'none', fontWeight: 600 }}>
-              2
-            </button>
-            <button type="button" style={{ width: '30px', height: '30px', borderRadius: '50%', background: 'var(--surface)', color: 'var(--on-surface)', border: 'none', fontWeight: 600 }}>
-              3
-            </button>
-            <button type="button" style={{ padding: '0.35rem 0.75rem', borderRadius: '9999px', background: 'var(--surface)', color: 'var(--on-surface)', border: 'none', cursor: 'pointer' }}>
+
+            {Array.from({ length: totalPages }, (_, idx) => idx + 1).map(page => (
+              <button
+                key={page}
+                type="button"
+                onClick={() => setCurrentPage(page)}
+                className={`pagination-page-btn ${page === safePage ? 'active' : ''}`}
+                aria-current={page === safePage ? 'page' : undefined}
+              >
+                {page}
+              </button>
+            ))}
+
+            <button 
+              type="button" 
+              disabled={safePage >= totalPages}
+              onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+              className="pagination-arrow-btn"
+              title={t('rev.next')}
+            >
               {t('rev.next')}
             </button>
           </div>

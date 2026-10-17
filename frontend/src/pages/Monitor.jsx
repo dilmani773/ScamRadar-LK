@@ -237,15 +237,7 @@ export default function Monitor({ onNavigateReview }) {
                 <span style={{ fontSize: '1.15rem', fontWeight: 800, letterSpacing: '-0.01em' }}>
                   {t('banner.badge')}
                 </span>
-                <span style={{
-                  padding: '0.15rem 0.6rem',
-                  borderRadius: '9999px',
-                  background: 'rgba(255, 255, 255, 0.85)',
-                  color: 'var(--error)',
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: '0.75rem',
-                  fontWeight: 700
-                }}>
+                <span className="rule-badge-pill">
                   Rule: P(Conf &lt; 0.55) &gt; 10%
                 </span>
               </div>

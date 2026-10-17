@@ -290,7 +290,7 @@ const STRINGS = {
   "rev.l.ta": { en: "Tamil & Tanglish", si: "දෙමළ සහ Tanglish", ta: "தமிழ் & Tanglish" },
   "rev.l.en": { en: "English", si: "ඉංග්‍රීසි", ta: "ஆங்கிலம்" },
   "rev.dist.foot": { en: "Annotating remaining quarantined instances recalibrates word vector clusters across all four linguistic modalities.", si: "ඉතිරි පණිවිඩවලට label දීමෙන් භාෂා හතරටම model එක යළි සකසේ.", ta: "மீதமுள்ள செய்திகளுக்கு label இடுவது நான்கு மொழிகளுக்கும் model-ஐ மீண்டும் சீரமைக்கிறது." },
-  "rev.showing": { en: "Showing 1 to {a} of {b} flagged items", si: "සලකුණු කළ {b}න් 1 සිට {a} දක්වා", ta: "குறிக்கப்பட்ட {b}-இல் 1 முதல் {a} வரை" },
+  "rev.showing": { en: "Showing {a} of {b} flagged items", si: "සලකුණු කළ {b}න් {a} දක්වා", ta: "குறிக்கப்பட்ட {b}-இல் {a}" },
   "rev.target": { en: "Target:", si: "ඉලක්කය:", ta: "இலக்கு:" },
 };
 
