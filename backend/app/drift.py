@@ -64,4 +64,4 @@ def check(predictor, window: int | None = None) -> dict:
     drifting = any(s["status"] == "alert" for s in signals)
     return {"window": window, "current": cur, "baseline": base, "signals": signals, "drift": drifting,
             "response": ("Fallback active: unfamiliar messages are marked Suspicious and sent to human review. "
-                         "Label the review queue, then retrain.") if drifting else "Normal operation.")}
+                         "Label the review queue, then retrain.") if drifting else "Normal operation."}
