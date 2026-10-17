@@ -11,7 +11,7 @@ import joblib
 import numpy as np
 from sklearn.preprocessing import normalize
 
-from .textutils import detect_language, red_flags
+from .textutils import LANGUAGE_GROUP, detect_language, red_flags
 
 ADVICE = {
     "Scam": "Do not reply, click links or share OTPs. Report it and contact your bank through its official number.",
@@ -53,12 +53,19 @@ class Predictor:
     def _model(self, text):
         b = self.bundle
         proba = b["pipeline"].predict_proba([text])[0]
+        if b.get("kind") == "ensemble":  # v1: blend with embeddings using the language group's weight
+            from ml.embed import encode
+            e = encode([text])
+            w = b["weights"][LANGUAGE_GROUP[detect_language(text)]]
+            proba = w * proba + (1 - w) * b["emb_clf"].predict_proba(e)[0]
+            novelty = float(1.0 - (e @ b["nn_emb"].T).max())
+        else:
+            x = normalize(b["pipeline"].named_steps["features"].transform([text]))
+            novelty = float(1.0 - (x @ b["nn_matrix"].T).max()) if b["nn_matrix"].shape[0] else 1.0
         classes = list(b["pipeline"].classes_)
         p_legit = proba[classes.index("legit")] if "legit" in classes else 0.0
         scam_idx = [i for i, c in enumerate(classes) if c != "legit"]
         top = max(scam_idx, key=lambda i: proba[i]) if scam_idx else int(np.argmax(proba))
-        x = normalize(b["pipeline"].named_steps["features"].transform([text]))
-        novelty = float(1.0 - (x @ b["nn_matrix"].T).max()) if b["nn_matrix"].shape[0] else 1.0
         return float(1.0 - p_legit), classes[top], float(proba.max()), novelty
 
     def predict(self, text: str) -> dict:

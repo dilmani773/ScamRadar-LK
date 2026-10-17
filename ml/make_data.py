@@ -184,6 +184,33 @@ LEGIT = {
                "sunday aththai veetla saapadu"]),
 }
 
+
+# Extra legit messages used ONLY in train (test keeps its own unseen legit phrasings).
+LEGIT_EXTRA = {
+ "en": ["Payment of Rs. 3,200 received for your water bill. Thank you.", "Your {bank} statement for September is ready in the app.",
+        "Your order #4471 has been packed and will ship today.", "Class is cancelled tomorrow, please read chapter 4 instead.",
+        "Happy birthday putha! Call me when you are free.", "The doctor's appointment is at 4.30pm on Friday.",
+        "Your mobile reload of Rs. 500 was successful.", "Bus is late, I will be there in 20 minutes.",
+        "Thank you for shopping with us. Your receipt total is Rs. 1,850.", "Reminder: parent-teacher meeting on Monday at 2pm.",
+        "Your {courier} parcel was delivered and signed for.", "Can you send me the photos from yesterday?"],
+ "si": ["ඔබගේ ජල බිල්පතට රු. 3,200ක ගෙවීම ලැබුණි. ස්තූතියි.", "ඔබගේ ඇණවුම අද යවනු ලැබේ.",
+        "හෙට පන්තිය නැහැ, හතරවෙනි පාඩම කියවන්න.", "සුබ උපන්දිනයක් පුතේ! නිදහස් වුණාම කතා කරන්න.",
+        "සිකුරාදා හවස 4.30ට වෛද්‍යවරයා හමුවීමට වේලාව තියෙනවා.", "ඔබගේ රු. 500 රීලෝඩ් එක සාර්ථකයි.",
+        "බස් එක පරක්කුයි, විනාඩි 20කින් එනවා.", "ඊයේ ෆොටෝ ටික එවන්න පුළුවන්ද?",
+        "සඳුදා දෙකට දෙමාපිය රැස්වීම තියෙනවා.", "ඔබගේ පාර්සලය භාර දෙන ලදී."],
+ "ta": ["உங்கள் தண்ணீர் கட்டணம் ரூ. 3,200 பெறப்பட்டது. நன்றி.", "உங்கள் ஆர்டர் இன்று அனுப்பப்படும்.",
+        "நாளை வகுப்பு இல்லை, நான்காம் பாடத்தைப் படியுங்கள்.", "பிறந்தநாள் வாழ்த்துக்கள் மகனே! நேரம் கிடைக்கும் போது அழை.",
+        "வெள்ளிக்கிழமை மாலை 4.30க்கு மருத்துவர் சந்திப்பு.", "உங்கள் ரூ. 500 ரீலோட் வெற்றிகரமாக முடிந்தது.",
+        "பஸ் தாமதம், 20 நிமிடத்தில் வருவேன்.", "நேற்றைய புகைப்படங்களை அனுப்ப முடியுமா?",
+        "திங்கள் மதியம் 2 மணிக்கு பெற்றோர் கூட்டம்.", "உங்கள் பார்சல் ஒப்படைக்கப்பட்டது."],
+ "singlish": ["water bill eka gewwa, rs 3200 ne", "oyage order eka ada yawanawa", "heta class eka na, 4 weni paadama kiyawanna",
+              "suba upandinayak putha! free unama call karanna", "sikurada 4.30ta doctor appointment eka thiyenawa",
+              "bus eka parakku, winadi 20kin ennam", "iye photos tika ewanna puluwanda", "sanduda dekata parents meeting eka"],
+ "tanglish": ["water bill kattiten, rs 3200", "unga order innaiku anuppuvanga", "naalaiku class illa, 4th lesson padinga",
+              "happy birthday thambi! free aanaa call pannu", "velli kizhamai 4.30 ku doctor appointment",
+              "bus late, 20 nimisham la varen", "nethu photos anuppa mudiyuma", "monday 2 mani ku parents meeting"],
+}
+
 OPENERS = {"en": (["Dear Customer,", "ALERT:", "Hello,"], ["Notice:", "Hi sir/madam,", "IMPORTANT"]),
            "si": (["හිතවත් පාරිභෝගිකය,", "දැනුම්දීමයි:"], ["වැදගත්:", "ආයුබෝවන්,"]),
            "ta": (["அன்புள்ள வாடிக்கையாளரே,", "அறிவிப்பு:"], ["முக்கியம்:", "வணக்கம்,"]),
@@ -234,7 +261,8 @@ def message(label, lang, split, rng):
     s = 0 if split == "train" else 1
     if label == "legit":
         pool = LEGIT[base_lang][0] + LEGIT[base_lang][1]
-        core = fill(rng.choice(pool[::2] if s == 0 else pool[1::2]), rng)
+        pool = pool[::2] + LEGIT_EXTRA[base_lang] if s == 0 else pool[1::2]
+        core = fill(rng.choice(pool), rng)
         parts = [core]
     else:
         core = fill(rng.choice(combos(label, base_lang, split)), rng)

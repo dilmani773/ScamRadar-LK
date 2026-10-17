@@ -7,3 +7,5 @@ pandas==2.3.3
 joblib==1.5.3
 scipy==1.17.1
 sentence-transformers==3.3.1
+torch==2.14.1
+transformers==4.57.6
