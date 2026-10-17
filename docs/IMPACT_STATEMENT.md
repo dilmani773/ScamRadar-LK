@@ -1,53 +1,40 @@
-# ScamRadar LK · 1-Page Social Impact Statement
-**Domain:** Financial Fraud Prevention, Social Welfare Protection & Digital Inclusion  
-**Target Region:** Sri Lanka (Islandwide)  
-**Authors:** Team Paradox (TensorForge 2.0 Final-Forge, 17 October 2026)
+# ScamRadar LK: Impact Statement
 
----
+Team Paradox. TensorForge 2.0 Final Forge. 17 October 2026.
 
-## 1. Executive Summary & Problem Context
-In June 2026, the **Central Bank of Sri Lanka (CBSL)** launched the nationwide **"Be Scam Proof"** campaign following an exponential surge in digital payment fraud, unauthorized OTP drains, and predatory micro-loan syndicates. 
+**Scams change. ScamRadar notices, and tells you before it fails.**
 
-As Sri Lanka accelerates the transition of **1.25 million low-income households** to direct digital bank transfers under the **Aswesuma Welfare Scheme**, and prepares for the **Sri Lanka Unique Digital Identity (SL-UDI)** rollout, citizens who are digitally illiterate or first-time smartphone users face extreme financial risk. Scammers exploit this lack of familiarity through urgent SMS and WhatsApp messages written in colloquial Sinhala, Tamil, Singlish, and Tanglish.
+## The problem
 
-Existing spam filters fail because they are calibrated for standard English corporate phishing and collapse silently when attackers introduce new colloquial phrasing or new national targets.
+Scam messages in Sri Lanka come in Sinhala, Tamil, Singlish, Tanglish and English. Scammers change their words often. A scam filter can work today and fail next month. Usually nobody notices. In June 2026 the Central Bank started the Be Scam Proof campaign. New systems like the SL-UDI digital ID give scammers new targets.
 
----
+## Who we protect
 
-## 2. Who is Protected & Beneficiary Scale
-| Target Beneficiary Group | Population Reach | Primary Threat Vector | Direct Protection Mechanism |
-|---|---|---|---|
-| **Aswesuma Beneficiaries & Rural Pensioners** | **1,250,000+ citizens** | Fake "Aswesuma payment delayed / claim fee required" SMS | Immediate red-flagging of fee requests & unverified links; zero victim blaming. |
-| **First-Time Mobile Banking Users** | **4,800,000+ account holders** | Bank account suspended / OTP credential phishing | "Safe-by-default" fallback; automated hotline verification advice. |
-| **Digital ID (SL-UDI) Registrants** | **General adult public** | Fake biometric / national ID update links (`.cc`, `.xyz`) | Novelty drift detection catches zero-day SL-UDI scams even before retraining. |
-| **Micro-Entrepreneurs & Youth** | **~850,000 gig workers** | "Double money" crypto schemes & fake remote jobs | Identifies advance fee extortion and illegal APK download demands. |
+* **Aswesuma welfare recipients (1,251,522 in August 2026).** Risk: fake "your payment is pending" messages that ask for a fee. ScamRadar flags fee requests and unknown links. It explains the risk in Sinhala, Tamil or English.
+* **First time mobile banking users.** Risk: fake bank alerts that ask for an OTP, a PIN or a login. ScamRadar flags OTP requests and account threats. It tells them to call the bank's official number.
+* **Job and loan seekers.** Risk: fake job fees and fake loan app fees. ScamRadar flags money requests and prize promises before they pay.
 
----
+## What a person sees
 
-## 3. Measurable Harm Prevented & Economic Value
+A person pastes a message. In seconds they see **Scam**, **Suspicious** or **Safe**. They see the warning signs in their own language. They get clear advice. If the system is not sure, it never says Safe. It says Suspicious and asks them to check with the official hotline.
 
-1. **Individual Household Protection:**
-   - The average financial loss to an SMS phishing victim in Sri Lanka ranges from **LKR 25,000 to LKR 120,000** — often representing **1 to 3 months of basic living income** for a vulnerable rural family.
-   - By intercepting scams at the point of receipt before credentials or OTPs are compromised, ScamRadar LK prevents irreversible balance wipeouts.
+## Why it keeps working
 
-2. **Systemic Trust in Digital Public Infrastructure (DPI):**
-   - Fraud undermines public faith in critical state modernization initiatives like the Aswesuma welfare system and SL-UDI.
-   - A verified, trustworthy trilingual scam verification shield preserves digital inclusion and prevents beneficiaries from reverting to high-friction cash economies.
+The system watches its own answers. When a new scam wave arrives, it raises an alert. It sends unclear messages to a human reviewer. It learns from the reviewed messages. A new model goes live only if it passes a test on held out data.
 
-3. **High Scam Recall with Low False Alarms:**
-   - **100% Scam Recall** on held-out evaluation tests ensures no genuine threats are marked "Safe".
-   - **Safe-by-Default Fallback**: Rather than guessing when uncertain, unfamiliar messages default to *Suspicious*, ensuring zero catastrophic silent failures.
+## Results
 
----
+* **Scam recall:** 100%. It caught every scam in 600 held out messages.
+* **False alarms:** 7.7% of normal messages. Accuracy: 96.5%.
+* **Languages:** 100% on Sinhala, Tamil, Singlish and Tanglish messages. 86.7% on English.
+* **New scam wave:** the drift monitor raised an alert. After human review and retraining, accuracy on the new SL-UDI wave went from 13% to 98%.
 
-## 4. Realistic Path to Adoption & Deployment
+## Path to real use
 
-```
-[Phase 1: Pilot Web Service] ──► [Phase 2: Telco & CBSL API Gateway] ──► [Phase 3: Native On-Device Protection]
-• Live FastAPI & PWA           • Integration with Dialog/Mobitel SMS    • Offline Android SMS SDK for
-• Hotline 1919 integration       filtering firewalls                     elderly feature-phones
-```
+* **Pilot:** a bank uses ScamRadar in its customer awareness channel. Or welfare officers at Divisional Secretariats use the review queue.
+* **Next:** test with real reported scams from partners, with consent. Native speakers check the Sinhala and Tamil text.
+* **Later:** a bot. People forward an SMS or WhatsApp message and get an answer.
 
-- **Immediate Deployment:** Hosted on lightweight Docker containers requiring under 1.5GB RAM, deployable on government cloud infrastructure (Lanka Government Cloud - LGC).
-- **Public Hotline Bridge:** Integration with Sri Lanka’s **Government Information Centre (GIC 1919)** and **Sri Lanka CERT|CC** as an analyst triage tool.
-- **Telco Partnership:** Provision as a REST API microservice for local telecom operators (Dialog, Mobitel, SLT-Mobitel, Airtel/Hutch) to screen bulk SMS aggregators before message dispatch.
+## Honest limits
+
+Our data is synthetic. We made it ourselves. It has no real personal data. Scores on real messages may be lower at first. ScamRadar does not send any data to the authorities. To report a scam today, call Sri Lanka CERT on 101 or visit cert.gov.lk.

@@ -1,5 +1,5 @@
 {
- "version": "e5ens-ff77c3a2",
+ "version": "e5ens-04429401",
  "kind": "ensemble",
  "trained_on": 3004,
  "test": {
@@ -43,6 +43,6 @@
  "gate": {
   "held_out_not_worse": true,
   "shifted_not_worse": true,
-  "previous_version": "e5ens-78cfa0c3"
+  "previous_version": "e5ens-ff77c3a2"
  }
 }
