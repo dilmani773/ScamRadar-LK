@@ -1,44 +1,70 @@
-# Experiments log (Team Paradox)
+# ScamRadar LK
 
-All scores are on `validation.csv` (800 tickets) from **Run 1** models, trained on `train.csv` only.
-Each run folder holds `val_probs.npz` (validation probabilities: `cat`, `sec`, `urg`), used by
-`notebooks/05_ensemble_analysis.ipynb` to test ensembles without retraining.
+Multilingual (Sinhala, Tamil, Singlish, Tanglish, English) SMS and WhatsApp scam detector that protects first-time
+mobile-banking users and welfare recipients in Sri Lanka, notices when scammers change tactics, and responds with an
+alert, a safe fallback, a human-review queue and gated retraining.
 
-## Single models
+> TensorForge 2.0 Final-Forge · Team Paradox · built on 17 October 2026 within the 6-hour window.
 
-| Run | Backbone | Aug | Cat acc | Cat macro-F1 | Sec F1 | Urg F1 | Singlish | si | en | Robust: cat changed | int8 agreement | Size | GPU time |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| tfidf | TF-IDF + LR | – | 0.611 | 0.639 | 0.637 | 0.890 | **0.885** | 0.412 | 0.529 | – | – | 3 MB | – |
-| e5_base (notebook 02) | multilingual-e5-base | light noise | **0.9225** | **0.937** | 0.960 | **1.000** | 0.805 | 0.931 | **0.964** | – | **1.00** | 278 MB | ~6 min |
-| xlmr_large_none_seed42 | xlm-roberta-large | light noise | 0.8975 | 0.915 | 0.952 | 0.975 | 0.675 | **1.000** | 0.946 | **3.5%** | 0.95 | 561 MB | ~30 min |
-| labse_none_seed42 | LaBSE | light noise | 0.9175 | 0.913 | 0.926 | 0.969 | 0.825 | 0.981 | 0.918 | 6.1% | ❌ 0.26 (default int8) | 471 MB | ~10 min |
+## Problem and users
+TODO (Hareen): who is protected, how they are scammed, why now (CBSL "Be Scam Proof", SL-UDI).
 
-## Ensembles (nested CV on validation, 5 folds × 3 repeats)
+## Architecture
+TODO: diagram (`docs/architecture.png`).
 
-| Ensemble | Models | Accuracy |
-|---|---|---|
-| e5_base + TF-IDF (notebook 02 / build_ensemble) | 2 | 0.932 |
-| Global weights | TF-IDF + LaBSE + XLM-R large | 0.944 ± 0.015 |
-| **Language-aware weights** (detected language group) | TF-IDF + LaBSE + XLM-R large | **0.958 ± 0.012** |
+Message → language detection + red flags → classifier (TF-IDF baseline, multilingual embeddings) → verdict →
+prediction log (SQLite) → drift monitor (confidence, low-confidence share, novelty rate, language mix) →
+response (alert, Suspicious fallback, review queue, retraining with an evaluation gate) → dashboard.
 
-Language detector (char n-grams on text only): 99.9% on validation. The API sends no language field.
+## Run it
+```bash
+python -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
+python -m ml.train                         # trains on data/processed, writes models/ and reports/metrics.json
+uvicorn backend.app.main:app --reload --port 8000
+```
+Docker:
+```bash
+docker build -t scamradar .
+docker run -p 8000:8000 scamradar
+```
+Frontend: see `frontend/README.md`. API contract: `docs/API.md`.
 
-## Findings
+## Data sources and licences
+| File | Rows | How it was made | Licence |
+|---|---|---|---|
+| `data/processed/train.csv` | TODO | TODO (hand-written / LLM-generated, prompts in `data/raw/`) | own, CC BY 4.0 |
+| `data/processed/test.csv` | TODO | TODO (different prompt/style from train) | own |
+| `data/processed/shifted.csv` | TODO | TODO (new tactic: SL-UDI) | own |
+| `data/processed/shifted_eval.csv` | TODO | TODO | own |
 
-1. **Bigger is not better here.** XLM-R large scored below e5-base overall and is 2x larger and slower; its int8 export also loses 5% agreement.
-2. **Validation Singlish contains phrasings that never appear in Singlish training tickets** ("kema seethala wela" = food cold, "gedarata awilla na" = not delivered). Each model fails on a different one, which is why ensembling helps.
-3. **Native script vs romanised.** Encoders are near-perfect on Sinhala/Tamil script but weaker on Singlish (romanised text is rare in pre-training). TF-IDF is the opposite.
-4. **Language-aware ensemble** (TF-IDF weighted up for romanised text, encoders for native script and English) adds +1.4 points over one global weight set.
-5. LaBSE breaks with default int8 quantization; notebook 04 now tries several int8 settings and keeps the one that matches PyTorch.
+No real personal data: no real phone numbers, NIC numbers, bank details or screenshots. Synthetic scam messages are
+for training and testing only and are never sent to anyone.
 
-## Caveats
+## Evaluation results (held-out test set)
+TODO: copy from `reports/metrics.json` (accuracy, macro-F1, scam recall, false alarm rate, per language).
 
-- TF-IDF's Singlish strength comes from close matches with training sentences; it may drop on unseen holdout phrasings.
-- Tanglish and mixed have only 20 validation tickets each, so per-language numbers there are noisy.
+## Monitoring and drift response
+| Signal | Fires when |
+|---|---|
+| Mean confidence | Falls more than 0.10 below the held-out baseline |
+| Low-confidence share | More than 2x baseline and above 10% |
+| Novelty rate (distance from training data) | More than 2x baseline and above 10% |
+| Language mix (PSI) | Above 0.20 |
 
-## Next
+Response: alert in the dashboard and `alerts` table; messages that are unfamiliar or low-confidence are never marked
+Safe (fallback to Suspicious with "verify via the official hotline"); they go to the human review queue; reviewed
+labels trigger retraining (`POST /api/retrain`), and the new model is promoted only if held-out macro-F1 does not drop
+by more than 0.01 and accuracy on `shifted_eval.csv` does not fall.
 
-- [ ] e5-base `val_probs.npz` (notebook 02 run) → add as `experiments/e5_base_none_seed42/`
-- [ ] Re-run LaBSE with the fixed export (`MODEL="labse"`, `final_fit=True`) and check int8 agreement ≥ 0.98
-- [ ] Re-run notebook 05 with all models; decide the final ensemble (accuracy vs. size and CPU speed)
-- [ ] Add the language detector + per-group weights to `build_ensemble.py` / `predictor.py` (with the model owner)
+TODO: before/after numbers from the drift demo.
+
+## AI tools used
+Claude (Anthropic) as a coding and writing assistant; LLM-generated synthetic data (see data table). Every team
+member can explain the code.
+
+## Templates reused
+None yet. TODO: declare any personal templates (Dockerfile, Caddy config) if reused.
+
+## Licence
+MIT
