@@ -4,10 +4,33 @@ import re
 SINHALA = re.compile(r"[\u0D80-\u0DFF]")
 TAMIL = re.compile(r"[\u0B80-\u0BFF]")
 LATIN = re.compile(r"[A-Za-z]")
-SINGLISH_WORDS = {"eka", "ekak", "mage", "oya", "oyage", "karanna", "thiyenawa", "nam", "ne", "nehe", "naha",
-                  "denna", "ganna", "salli", "ikmanin", "ada", "heta", "kiyala", "wenawa", "una", "yanna", "giya"}
-TANGLISH_WORDS = {"illa", "panna", "pannunga", "enna", "naan", "unga", "ungal", "irukku", "vandhu", "venum",
-                  "panam", "seekiram", "kudunga", "pannitaanga", "aachu", "romba", "sollunga"}
+URL = re.compile(r"https?://\S+|www\.\S+|\b[\w-]+\.(?:com|lk|xyz|top|info|net|cc|ly|org)\b\S*", re.I)
+
+# Common words in Sinhala written with English letters (Singlish)
+SINGLISH_WORDS = {
+    "eka", "ekak", "ekai", "eke", "eken", "ekata", "mage", "mama", "mata", "oya", "oyage", "oyata", "oba", "obe",
+    "obage", "obata", "ape", "api", "apita", "karanna", "karala", "karanawa", "karanakam", "kalin", "thiyenawa",
+    "tiyenawa", "thiyena", "nathnam", "nathi", "nathuwa", "naha", "nehe", "nadda", "denna", "dennam", "ganna",
+    "gaththa", "salli", "mudal", "ikmanin", "heta", "ada", "iye", "kiyala", "kiyanna", "wenawa", "wena", "wenna",
+    "una", "unama", "yanna", "yamu", "giya", "gihin", "enna", "ennam", "enawa", "ewanna", "yawanna", "gewanna",
+    "gewwa", "bawa", "danwamu", "danna", "dala", "saha", "witara", "walata", "athule", "ithuru", "iwarai", "ona",
+    "oney", "epa", "puluwan", "puluwanda", "hondai", "hari", "ehenam", "ane", "aluth", "loku", "podi", "tika",
+    "gedara", "parakku", "winadi", "dawas", "dawasata", "suba", "thagga", "dinum", "labenawa", "labaganna", "udaw",
+    "kohomada", "mokakda", "monawada", "kawda", "wage", "nawaththala", "nawaththuwa", "hoyanna", "balanna",
+    "kiyawanna", "sathiyata", "patan", "paya", "wela", "welawe", "lage", "nanda", "iridha", "sikurada", "sanduda",
+}
+# Common words in Tamil written with English letters (Tanglish)
+TANGLISH_WORDS = {
+    "unga", "ungal", "ungalukku", "ungaluku", "neenga", "naan", "naanga", "panna", "pannunga", "pannu", "panni",
+    "pannitaanga", "enna", "illa", "illai", "illana", "illama", "irukku", "irukkum", "irundhu", "irundhe", "vandhu",
+    "vandha", "vanthu", "vaanga", "venum", "vendum", "panam", "kaasu", "seekiram", "udane", "kudunga", "kudu",
+    "anuppa", "anuppunga", "anuppavum", "aachu", "aagum", "aagala", "romba", "sollunga", "sollu", "innaiku",
+    "innaike", "inniki", "naalaiku", "naalaikku", "nethu", "adichurukku", "adichirukku", "podunga", "mudiyum",
+    "mudiyala", "mudiyuma", "enga", "inga", "eppadi", "epdi", "ippo", "ippove", "appo", "machan", "thambi",
+    "kattunga", "kattinaa", "kattiten", "velai", "varum", "varen", "veetla", "veetuku", "chinna", "konja", "oru",
+    "neram", "naal", "nimisham", "parisu", "udhavi", "vanakkam", "vaazhthukkal", "pudhu", "laabam", "seiyunga",
+    "padinga", "kulla", "munnadi", "dhaan", "aagiduchu", "jeyichirukeenga",
+}
 
 
 def detect_language(text: str) -> str:
@@ -16,12 +39,16 @@ def detect_language(text: str) -> str:
     if si or ta:
         native = si + ta
         return "mixed" if lat > native * 0.5 else ("si" if si >= ta else "ta")
-    words = set(re.findall(r"[a-z]+", text.lower()))
-    s, t = len(words & SINGLISH_WORDS), len(words & TANGLISH_WORDS)
-    if s >= 2 and s >= t:
+    words = re.findall(r"[a-z]+", URL.sub(" ", text.lower()))
+    uniq = set(words)
+    s, t = len(uniq & SINGLISH_WORDS), len(uniq & TANGLISH_WORDS)
+    short = len(words) <= 6  # one clear romanised word is enough in a very short message
+    if s > t and (s >= 2 or short):
         return "singlish"
-    if t >= 2:
+    if t > s and (t >= 2 or short):
         return "tanglish"
+    if s == t and s >= 2:
+        return "singlish"
     return "en"
 
 
