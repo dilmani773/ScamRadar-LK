@@ -1,0 +1,135 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 620" width="100%" height="100%" style="background-color: #0b0f19; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+  <defs>
+    <linearGradient id="blueGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e3a8a" />
+      <stop offset="100%" stop-color="#3b82f6" />
+    </linearGradient>
+    <linearGradient id="redGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#991b1b" />
+      <stop offset="100%" stop-color="#ef4444" />
+    </linearGradient>
+    <linearGradient id="amberGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#92400e" />
+      <stop offset="100%" stop-color="#f59e0b" />
+    </linearGradient>
+    <linearGradient id="greenGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#065f46" />
+      <stop offset="100%" stop-color="#10b981" />
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="6" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <!-- Title & Subtitle -->
+  <text x="550" y="42" fill="#ffffff" font-size="24" font-weight="bold" text-anchor="middle" letter-spacing="1">SCAMRADAR LK · SYSTEM ARCHITECTURE</text>
+  <text x="550" y="68" fill="#9ca3af" font-size="13" text-anchor="middle">Trilingual Scam Detection, Statistical Drift Surveillance &amp; Gated MLOps Feedback Loop</text>
+
+  <!-- Container Box 1: INGESTION & PREPROCESSING -->
+  <rect x="40" y="100" width="220" height="470" rx="12" fill="#111827" stroke="#374151" stroke-width="1.5" />
+  <rect x="40" y="100" width="220" height="36" rx="12" fill="#1f2937" />
+  <text x="150" y="124" fill="#60a5fa" font-size="13" font-weight="bold" text-anchor="middle">1. INPUT &amp; LINGUISTICS</text>
+
+  <rect x="55" y="155" width="190" height="65" rx="8" fill="#1f2937" stroke="#3b82f6" stroke-width="1" />
+  <text x="150" y="180" fill="#f3f4f6" font-size="12" font-weight="bold" text-anchor="middle">Multi-Channel Ingestion</text>
+  <text x="150" y="202" fill="#9ca3af" font-size="10.5" text-anchor="middle">SMS · WhatsApp · Web API</text>
+
+  <rect x="55" y="240" width="190" height="75" rx="8" fill="#1f2937" stroke="#4b5563" stroke-width="1" />
+  <text x="150" y="265" fill="#f3f4f6" font-size="12" font-weight="bold" text-anchor="middle">Language Identification</text>
+  <text x="150" y="285" fill="#9ca3af" font-size="10" text-anchor="middle">Sinhala (si) · Tamil (ta) · English</text>
+  <text x="150" y="302" fill="#9ca3af" font-size="10" text-anchor="middle">Singlish &amp; Tanglish Code-Mix</text>
+
+  <rect x="55" y="335" width="190" height="75" rx="8" fill="#1f2937" stroke="#4b5563" stroke-width="1" />
+  <text x="150" y="360" fill="#f3f4f6" font-size="12" font-weight="bold" text-anchor="middle">Heuristic Red Flags</text>
+  <text x="150" y="380" fill="#9ca3af" font-size="10" text-anchor="middle">OTP Phishing · Shortened URLs</text>
+  <text x="150" y="398" fill="#9ca3af" font-size="10" text-anchor="middle">Urgent Threats · Unverified 07X</text>
+
+  <rect x="55" y="430" width="190" height="70" rx="8" fill="#1f2937" stroke="#4b5563" stroke-width="1" />
+  <text x="150" y="455" fill="#f3f4f6" font-size="12" font-weight="bold" text-anchor="middle">Feature Representation</text>
+  <text x="150" y="475" fill="#9ca3af" font-size="10" text-anchor="middle">TF-IDF N-grams (1-2)</text>
+  <text x="150" y="492" fill="#9ca3af" font-size="10" text-anchor="middle">+ Multilingual-E5 Embeddings</text>
+
+  <!-- Flow Arrow 1 to 2 -->
+  <path d="M 260 300 L 305 300" stroke="#3b82f6" stroke-width="2" marker-end="url(#arrow)" fill="none" />
+
+  <!-- Container Box 2: CLASSIFIER & VERDICT ENGINE -->
+  <rect x="310" y="100" width="240" height="470" rx="12" fill="#111827" stroke="#374151" stroke-width="1.5" />
+  <rect x="310" y="100" width="240" height="36" rx="12" fill="#1f2937" />
+  <text x="430" y="124" fill="#a78bfa" font-size="13" font-weight="bold" text-anchor="middle">2. CLASSIFIER &amp; VERDICT</text>
+
+  <rect x="325" y="155" width="210" height="75" rx="8" fill="#1f2937" stroke="#8b5cf6" stroke-width="1" />
+  <text x="430" y="180" fill="#f3f4f6" font-size="12" font-weight="bold" text-anchor="middle">Ensemble Model</text>
+  <text x="430" y="200" fill="#9ca3af" font-size="10.5" text-anchor="middle">Calibrated Logistic Regression</text>
+  <text x="430" y="218" fill="#9ca3af" font-size="10" text-anchor="middle">Confidence &amp; Novelty Distance</text>
+
+  <rect x="325" y="250" width="210" height="135" rx="8" fill="#0f172a" stroke="#334155" stroke-width="1" />
+  <text x="430" y="275" fill="#e2e8f0" font-size="12" font-weight="bold" text-anchor="middle">Verdict Hierarchy</text>
+  <rect x="340" y="288" width="180" height="24" rx="4" fill="url(#redGrad)" />
+  <text x="430" y="304" fill="#ffffff" font-size="10.5" font-weight="bold" text-anchor="middle">🚨 Scam (Risk > 0.70)</text>
+  <rect x="340" y="318" width="180" height="24" rx="4" fill="url(#amberGrad)" />
+  <text x="430" y="334" fill="#ffffff" font-size="10.5" font-weight="bold" text-anchor="middle">⚠️ Suspicious / Safe Fallback</text>
+  <rect x="340" y="348" width="180" height="24" rx="4" fill="url(#greenGrad)" />
+  <text x="430" y="364" fill="#ffffff" font-size="10.5" font-weight="bold" text-anchor="middle">🛡️ Safe (Verified Format)</text>
+
+  <rect x="325" y="405" width="210" height="95" rx="8" fill="#1f2937" stroke="#4b5563" stroke-width="1" />
+  <text x="430" y="430" fill="#f3f4f6" font-size="12" font-weight="bold" text-anchor="middle">Citizen Protection Advice</text>
+  <text x="430" y="450" fill="#9ca3af" font-size="10" text-anchor="middle">No-OTP Golden Rule · Red Flags</text>
+  <text x="430" y="468" fill="#9ca3af" font-size="10" text-anchor="middle">GIC 1919 · CERT 101 · CBSL Hotline</text>
+  <text x="430" y="486" fill="#9ca3af" font-size="10" text-anchor="middle">Trilingual UI Guidance</text>
+
+  <!-- Flow Arrow 2 to 3 -->
+  <path d="M 550 300 L 595 300" stroke="#3b82f6" stroke-width="2" fill="none" />
+
+  <!-- Container Box 3: SURVEILLANCE & DRIFT ENGINE -->
+  <rect x="600" y="100" width="230" height="470" rx="12" fill="#111827" stroke="#374151" stroke-width="1.5" />
+  <rect x="600" y="100" width="230" height="36" rx="12" fill="#1f2937" />
+  <text x="715" y="124" fill="#f59e0b" font-size="13" font-weight="bold" text-anchor="middle">3. DRIFT SURVEILLANCE</text>
+
+  <rect x="615" y="155" width="200" height="65" rx="8" fill="#1f2937" stroke="#4b5563" stroke-width="1" />
+  <text x="715" y="180" fill="#f3f4f6" font-size="12" font-weight="bold" text-anchor="middle">Prediction Logging (SQLite)</text>
+  <text x="715" y="200" fill="#9ca3af" font-size="10.5" text-anchor="middle">Text · Scores · Lang · Timestamp</text>
+
+  <rect x="615" y="235" width="200" height="150" rx="8" fill="#0f172a" stroke="#d97706" stroke-width="1" />
+  <text x="715" y="260" fill="#fbbf24" font-size="12" font-weight="bold" text-anchor="middle">4 Statistical Signals (W=50)</text>
+  <text x="715" y="285" fill="#f3f4f6" font-size="10.5" text-anchor="middle">📉 Mean Confidence (-0.10)</text>
+  <text x="715" y="310" fill="#f3f4f6" font-size="10.5" text-anchor="middle">⚠️ Low-Conf Share (>2x base)</text>
+  <text x="715" y="335" fill="#f3f4f6" font-size="10.5" text-anchor="middle">🔍 Novelty Rate (>2x base)</text>
+  <text x="715" y="360" fill="#f3f4f6" font-size="10.5" text-anchor="middle">🌐 Language Mix (PSI ≥ 0.20)</text>
+
+  <rect x="615" y="405" width="200" height="95" rx="8" fill="#1f2937" stroke="#ef4444" stroke-width="1" />
+  <text x="715" y="430" fill="#ef4444" font-size="12" font-weight="bold" text-anchor="middle">Automated Defense Response</text>
+  <text x="715" y="450" fill="#9ca3af" font-size="10" text-anchor="middle">1. Alert in Dashboard &amp; Header</text>
+  <text x="715" y="468" fill="#9ca3af" font-size="10" text-anchor="middle">2. Safe Fallback Engaged</text>
+  <text x="715" y="486" fill="#9ca3af" font-size="10" text-anchor="middle">3. Auto-routed to Review Queue</text>
+
+  <!-- Flow Arrow 3 to 4 -->
+  <path d="M 830 300 L 865 300" stroke="#3b82f6" stroke-width="2" fill="none" />
+
+  <!-- Container Box 4: HUMAN REVIEW & RETRAINING GATE -->
+  <rect x="870" y="100" width="200" height="470" rx="12" fill="#111827" stroke="#374151" stroke-width="1.5" />
+  <rect x="870" y="100" width="200" height="36" rx="12" fill="#1f2937" />
+  <text x="970" y="124" fill="#34d399" font-size="13" font-weight="bold" text-anchor="middle">4. REVIEW &amp; RETRAIN</text>
+
+  <rect x="885" y="155" width="170" height="95" rx="8" fill="#1f2937" stroke="#10b981" stroke-width="1" />
+  <text x="970" y="180" fill="#f3f4f6" font-size="12" font-weight="bold" text-anchor="middle">Human Review Queue</text>
+  <text x="970" y="202" fill="#9ca3af" font-size="10" text-anchor="middle">Analyst Ground-Truthing</text>
+  <text x="970" y="222" fill="#34d399" font-size="10.5" font-weight="bold" text-anchor="middle">9 Ground-Truth Classes</text>
+  <text x="970" y="240" fill="#9ca3af" font-size="9.5" text-anchor="middle">(incl. digital_id_scam)</text>
+
+  <rect x="885" y="270" width="170" height="110" rx="8" fill="#0f172a" stroke="#059669" stroke-width="1" />
+  <text x="970" y="295" fill="#f3f4f6" font-size="12" font-weight="bold" text-anchor="middle">Evaluation Gate</text>
+  <text x="970" y="320" fill="#9ca3af" font-size="10" text-anchor="middle">Gate 1: Held-out Macro F1</text>
+  <text x="970" y="336" fill="#34d399" font-size="10" text-anchor="middle">(Δ F1 ≥ -0.01)</text>
+  <text x="970" y="356" fill="#9ca3af" font-size="10" text-anchor="middle">Gate 2: Shifted Eval Acc</text>
+  <text x="970" y="372" fill="#34d399" font-size="10" text-anchor="middle">(Accuracy Stable/Up)</text>
+
+  <rect x="885" y="400" width="170" height="70" rx="8" fill="#1f2937" stroke="#3b82f6" stroke-width="1" />
+  <text x="970" y="425" fill="#60a5fa" font-size="12" font-weight="bold" text-anchor="middle">Safe Promotion</text>
+  <text x="970" y="445" fill="#9ca3af" font-size="10" text-anchor="middle">Atomic Swap to v1</text>
+  <text x="970" y="460" fill="#9ca3af" font-size="10" text-anchor="middle">Self-Healing Pipeline</text>
+
+  <!-- Feedback Loop Back to Classifier -->
+  <path d="M 970 480 L 970 540 L 430 540 L 430 480" stroke="#10b981" stroke-width="2" stroke-dasharray="6,4" fill="none" />
+  <text x="700" y="534" fill="#34d399" font-size="11" font-weight="bold" text-anchor="middle">Feedback Loop: Promoted Model Automatically Reloaded in Production API</text>
+</svg>
