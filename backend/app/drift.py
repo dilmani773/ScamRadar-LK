@@ -4,7 +4,7 @@ Signals
   mean_confidence   falls by more than 0.10
   low_conf_share    share of predictions below the confidence threshold, more than 2x baseline (and > 0.10)
   novelty_rate      share of inputs far from the training data, more than 2x baseline (and > 0.10)
-  language_psi      population stability index of the language mix, above 0.20
+  language_psi      population stability index of the language mix (add-one smoothed), above 0.25
 """
 import math
 import os
@@ -14,10 +14,12 @@ from . import db
 LANGS = ["si", "ta", "mixed", "en", "singlish", "tanglish"]
 
 
-def _psi(cur: dict, base: dict) -> float:
+def _psi(cur: dict, base: dict, n: int) -> float:
+    """PSI with add-one smoothing, so a language missing from a small window does not cause a false alarm."""
     total = 0.0
     for k in LANGS:
-        a, b = max(cur.get(k, 0), 1e-4), max(base.get(k, 0), 1e-4)
+        a = (cur.get(k, 0) * n + 1) / (n + len(LANGS))
+        b = max(base.get(k, 0), 1e-3)
         total += (a - b) * math.log(a / b)
     return total
 
@@ -51,8 +53,8 @@ def check(predictor, window: int | None = None) -> dict:
              cur["low_conf_share"] > max(0.10, 2 * base["low_conf_share"]), "More low-confidence predictions"),
             ("novelty_rate", cur["novelty_rate"], base["novelty_rate"],
              cur["novelty_rate"] > max(0.10, 2 * base["novelty_rate"]), "Many messages unlike the training data"),
-            ("language_psi", _psi(cur["language_mix"], base["language_mix"]), 0.0,
-             _psi(cur["language_mix"], base["language_mix"]) > 0.20, "Language mix has shifted"),
+            ("language_psi", _psi(cur["language_mix"], base["language_mix"], cur["n"]), 0.0,
+             _psi(cur["language_mix"], base["language_mix"], cur["n"]) > 0.25, "Language mix has shifted"),
         ]
         for name, value, baseline, fired, msg in rules:
             signals.append({"signal": name, "value": round(value, 4), "baseline": round(baseline, 4),
@@ -62,4 +64,4 @@ def check(predictor, window: int | None = None) -> dict:
     drifting = any(s["status"] == "alert" for s in signals)
     return {"window": window, "current": cur, "baseline": base, "signals": signals, "drift": drifting,
             "response": ("Fallback active: unfamiliar messages are marked Suspicious and sent to human review. "
-                         "Label the review queue, then retrain.") if drifting else "Normal operation."}
+                         "Label the review queue, then retrain.") if drifting else "Normal operation.")}
