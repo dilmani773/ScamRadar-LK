@@ -153,7 +153,7 @@ export default function App() {
       {/* Main Dynamic View */}
       <main className="main-content">
         {activeTab === 'check' && <Check />}
-        {activeTab === 'monitor' && <Monitor />}
+        {activeTab === 'monitor' && <Monitor onNavigateReview={() => setActiveTab('review')} />}
         {activeTab === 'review' && <Review />}
       </main>
 
