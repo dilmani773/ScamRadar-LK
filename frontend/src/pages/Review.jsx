@@ -416,7 +416,7 @@ export default function Review() {
                         <div style={{ display: 'inline-flex', gap: '0.5rem' }}>
                           <button
                             type="button"
-                            onClick={() => handleLabel(item.id, 'SL-UDI Scam')}
+                            onClick={() => handleLabel(item.id, 'digital_id_scam')}
                             style={{
                               padding: '0.35rem 0.85rem',
                               borderRadius: '9999px',
@@ -434,7 +434,7 @@ export default function Review() {
 
                           <button
                             type="button"
-                            onClick={() => handleLabel(item.id, 'Legit')}
+                            onClick={() => handleLabel(item.id, 'legit')}
                             style={{
                               padding: '0.35rem 0.85rem',
                               borderRadius: '9999px',

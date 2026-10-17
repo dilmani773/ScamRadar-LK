@@ -120,7 +120,8 @@ function AppShell() {
               className={`nav-tab ${activeTab === 'review' ? 'active' : ''}`}
               onClick={() => setActiveTab('review')}
             >
-              {t('nav.review')} {reviewCount > 0 ? `(${reviewCount})` : ''}
+              <span>{t('nav.review')}</span>
+              {reviewCount > 0 && <span className="nav-tab-badge">{reviewCount}</span>}
             </button>
           </nav>
 
