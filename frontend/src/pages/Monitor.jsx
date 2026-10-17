@@ -27,13 +27,15 @@ import {
 } from 'recharts';
 import { API_URL } from '../config';
 import { normalizeMonitorData } from '../utils/apiResilience';
+import { useLang } from '../i18n';
 
 export default function Monitor({ onNavigateReview }) {
+  const { t } = useLang();
   const [monitorData, setMonitorData] = useState(null);
   const [historyData, setHistoryData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [simulating, setSimulating] = useState(false);
-  const [activeFeed, setActiveFeed] = useState('SL-UDI Zero-Day Batch (Synthetic)');
+  const [activeFeed, setActiveFeed] = useState('mon.feed.initial');
 
   const fetchData = async () => {
     try {
@@ -69,7 +71,7 @@ export default function Monitor({ onNavigateReview }) {
 
   const handleSimulateNormal = async () => {
     setSimulating(true);
-    setActiveFeed('Baseline Traffic (test.csv)');
+    setActiveFeed('mon.feed.normal');
     try {
       await fetch(`${API_URL}/api/simulate`, {
         method: 'POST',
@@ -86,7 +88,7 @@ export default function Monitor({ onNavigateReview }) {
 
   const handleSimulateWave = async () => {
     setSimulating(true);
-    setActiveFeed('SL-UDI Zero-Day Phishing Wave (shifted.csv)');
+    setActiveFeed('mon.feed.wave');
     try {
       await fetch(`${API_URL}/api/simulate`, {
         method: 'POST',
@@ -153,7 +155,7 @@ export default function Monitor({ onNavigateReview }) {
             letterSpacing: '0.04em'
           }}>
             <Zap size={14} className="animate-pulse" />
-            Real-time Threat Surveillance • Active Drift Detection
+            {t('mon.badge')}
           </span>
 
           <span style={{
@@ -169,23 +171,23 @@ export default function Monitor({ onNavigateReview }) {
             fontWeight: 600
           }}>
             <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--secondary)' }} />
-            Window: Last {monitorData?.window || 500} Inferences
+            {t('mon.window', { n: monitorData?.window || 50 })}
           </span>
         </div>
 
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '1rem' }}>
           <div>
             <h1 style={{ fontSize: '2.4rem', fontWeight: 800, color: 'var(--primary)', letterSpacing: '-0.025em', lineHeight: 1.2 }}>
-              System Drift & Threat Surveillance
+              {t('mon.title')}
             </h1>
             <p style={{ fontSize: '1.05rem', color: 'var(--on-surface-variant)', marginTop: '0.5rem', maxWidth: '780px' }}>
-              Continuous monitoring of model certainty, novelty distance, and language mix shifts across Sinhala, Tamil, Singlish, and English civic streams.
+              {t('mon.desc')}
             </p>
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
             <span style={{ fontSize: '0.7rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--outline)' }}>
-              Surveillance Mode
+              {t('mon.mode')}
             </span>
             <span style={{
               fontSize: '1.1rem',
@@ -196,7 +198,7 @@ export default function Monitor({ onNavigateReview }) {
               gap: '0.35rem'
             }}>
               <FileEdit size={18} />
-              {isDrift ? 'Gated Fallback' : 'Normal Baseline'}
+              {isDrift ? t('mon.mode.drift') : t('mon.mode.normal')}
             </span>
           </div>
         </div>
@@ -233,7 +235,7 @@ export default function Monitor({ onNavigateReview }) {
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', flexWrap: 'wrap' }}>
                 <span style={{ fontSize: '1.15rem', fontWeight: 800, letterSpacing: '-0.01em' }}>
-                  DRIFT DETECTED • FALLBACK ACTIVE
+                  {t('banner.badge')}
                 </span>
                 <span style={{
                   padding: '0.15rem 0.6rem',
@@ -248,7 +250,7 @@ export default function Monitor({ onNavigateReview }) {
                 </span>
               </div>
               <p style={{ fontSize: '0.9rem', marginTop: '0.35rem', opacity: 0.95, lineHeight: 1.5 }}>
-                Unfamiliar messages are automatically routed to <strong>Suspicious</strong> and quarantined to human review. Label the queue to trigger gated retraining for model checkpoint <strong>tfidf-7c2b6d2d</strong>.
+                {t('mon.fallbackDesc')}
               </p>
             </div>
           </div>
@@ -272,7 +274,7 @@ export default function Monitor({ onNavigateReview }) {
               boxShadow: 'var(--shadow-sm)'
             }}
           >
-            <span>Go to Review Queue</span>
+            <span>{t('mon.goReview')}</span>
             <ArrowRight size={17} />
           </button>
         </section>
@@ -291,17 +293,17 @@ export default function Monitor({ onNavigateReview }) {
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <span style={{ color: 'var(--secondary)' }}>⚙️</span>
               <h2 style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--primary)' }}>
-                Live Drift Simulation Controls
+                {t('mon.sim.title')}
               </h2>
             </div>
             <p style={{ fontSize: '0.85rem', color: 'var(--on-surface-variant)', marginTop: '0.2rem' }}>
-              Simulate incoming traffic streams to demonstrate automated drift detection & safe-fallback quarantine.
+              {t('mon.sim.desc')}
             </p>
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.8rem', color: 'var(--on-surface-variant)' }}>
             <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: 'var(--secondary)' }} />
-            <span>Active Feed: <strong style={{ color: 'var(--on-surface)' }}>{activeFeed}</strong></span>
+            <span>{t('mon.feed')} <strong style={{ color: 'var(--on-surface)' }}>{t(activeFeed)}</strong></span>
           </div>
         </div>
 
@@ -340,10 +342,10 @@ export default function Monitor({ onNavigateReview }) {
               </div>
               <div>
                 <strong style={{ display: 'block', fontSize: '0.925rem', color: 'var(--on-surface)' }}>
-                  Simulate Normal Traffic
+                  {t('mon.btn.normal')}
                 </strong>
                 <span style={{ fontSize: '0.75rem', color: 'var(--on-surface-variant)', fontFamily: 'var(--font-mono)' }}>
-                  Baseline dataset (test.csv)
+                  {t('mon.btn.normalSub')}
                 </span>
               </div>
             </div>
@@ -385,10 +387,10 @@ export default function Monitor({ onNavigateReview }) {
               </div>
               <div>
                 <strong style={{ display: 'block', fontSize: '0.925rem', color: 'var(--on-error-container)', fontWeight: 800 }}>
-                  Simulate New Scam Wave
+                  {t('mon.btn.wave')}
                 </strong>
                 <span style={{ fontSize: '0.75rem', opacity: 0.85, fontFamily: 'var(--font-mono)' }}>
-                  SL-UDI Identity Phishing
+                  {t('mon.btn.waveSub')}
                 </span>
               </div>
             </div>
@@ -428,10 +430,10 @@ export default function Monitor({ onNavigateReview }) {
               </div>
               <div>
                 <strong style={{ display: 'block', fontSize: '0.925rem', color: 'var(--on-surface)' }}>
-                  Reset / Refresh Stream
+                  {t('mon.btn.reset')}
                 </strong>
                 <span style={{ fontSize: '0.75rem', color: 'var(--on-surface-variant)', fontFamily: 'var(--font-mono)' }}>
-                  Flush 500-sample sliding buffer
+                  {t('mon.btn.resetSub')}
                 </span>
               </div>
             </div>
@@ -456,7 +458,7 @@ export default function Monitor({ onNavigateReview }) {
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.75rem' }}>
               <span style={{ fontSize: '0.78rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--on-surface-variant)' }}>
-                Average Confidence
+                {t('mon.card.conf')}
               </span>
               <span style={{
                 padding: '0.15rem 0.55rem',
@@ -466,7 +468,7 @@ export default function Monitor({ onNavigateReview }) {
                 background: meanConf.status === 'alert' ? 'var(--error-container)' : 'var(--surface-container)',
                 color: meanConf.status === 'alert' ? 'var(--error)' : 'var(--primary)'
               }}>
-                {meanConf.status === 'alert' ? 'DRIFT ALERT' : 'HEALTHY'}
+                {meanConf.status === 'alert' ? t('mon.status.alert') : t('mon.status.ok')}
               </span>
             </div>
 
@@ -475,7 +477,7 @@ export default function Monitor({ onNavigateReview }) {
                 {Number(meanConf.value).toFixed(2)}
               </span>
               <span style={{ fontSize: '0.8rem', color: 'var(--on-surface-variant)' }}>
-                baseline: <strong style={{ color: 'var(--on-surface)' }}>{Number(meanConf.baseline).toFixed(2)}</strong>
+                {t('mon.baseline')} <strong style={{ color: 'var(--on-surface)' }}>{Number(meanConf.baseline).toFixed(2)}</strong>
               </span>
             </div>
 
@@ -485,7 +487,7 @@ export default function Monitor({ onNavigateReview }) {
           </div>
 
           <p style={{ fontSize: '0.78rem', color: 'var(--on-surface-variant)', marginTop: '1rem', paddingTop: '0.75rem', borderTop: '1px solid var(--surface-container-low)' }}>
-            Monitors whether the model is losing certainty across incoming traffic.
+            {t('mon.card.confDesc')}
           </p>
         </div>
 
@@ -503,7 +505,7 @@ export default function Monitor({ onNavigateReview }) {
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.75rem' }}>
               <span style={{ fontSize: '0.78rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--on-surface-variant)' }}>
-                Low-Confidence Share
+                {t('mon.card.low')}
               </span>
               <span style={{
                 padding: '0.15rem 0.55rem',
@@ -513,7 +515,7 @@ export default function Monitor({ onNavigateReview }) {
                 background: lowConf.status === 'alert' ? 'var(--error-container)' : 'var(--surface-container)',
                 color: lowConf.status === 'alert' ? 'var(--error)' : 'var(--primary)'
               }}>
-                {lowConf.status === 'alert' ? 'DRIFT ALERT' : 'HEALTHY'}
+                {lowConf.status === 'alert' ? t('mon.status.alert') : t('mon.status.ok')}
               </span>
             </div>
 
@@ -522,7 +524,7 @@ export default function Monitor({ onNavigateReview }) {
                 {Number(lowConf.value).toFixed(2)}
               </span>
               <span style={{ fontSize: '0.8rem', color: 'var(--on-surface-variant)' }}>
-                baseline: <strong style={{ color: 'var(--on-surface)' }}>{Number(lowConf.baseline).toFixed(2)}</strong>
+                {t('mon.baseline')} <strong style={{ color: 'var(--on-surface)' }}>{Number(lowConf.baseline).toFixed(2)}</strong>
               </span>
             </div>
 
@@ -532,7 +534,7 @@ export default function Monitor({ onNavigateReview }) {
           </div>
 
           <p style={{ fontSize: '0.78rem', color: 'var(--on-surface-variant)', marginTop: '1rem', paddingTop: '0.75rem', borderTop: '1px solid var(--surface-container-low)' }}>
-            Triggers alert when borderline predictions exceed 10% and double baseline.
+            {t('mon.card.lowDesc')}
           </p>
         </div>
 
@@ -550,7 +552,7 @@ export default function Monitor({ onNavigateReview }) {
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.75rem' }}>
               <span style={{ fontSize: '0.78rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--on-surface-variant)' }}>
-                Zero-Day Novelty Rate
+                {t('mon.card.nov')}
               </span>
               <span style={{
                 padding: '0.15rem 0.55rem',
@@ -560,7 +562,7 @@ export default function Monitor({ onNavigateReview }) {
                 background: noveltyRate.status === 'alert' ? 'var(--error-container)' : 'var(--surface-container)',
                 color: noveltyRate.status === 'alert' ? 'var(--error)' : 'var(--primary)'
               }}>
-                {noveltyRate.status === 'alert' ? 'DRIFT ALERT' : 'HEALTHY'}
+                {noveltyRate.status === 'alert' ? t('mon.status.alert') : t('mon.status.ok')}
               </span>
             </div>
 
@@ -569,7 +571,7 @@ export default function Monitor({ onNavigateReview }) {
                 {Number(noveltyRate.value).toFixed(2)}
               </span>
               <span style={{ fontSize: '0.8rem', color: 'var(--on-surface-variant)' }}>
-                baseline: <strong style={{ color: 'var(--on-surface)' }}>{Number(noveltyRate.baseline).toFixed(2)}</strong>
+                {t('mon.baseline')} <strong style={{ color: 'var(--on-surface)' }}>{Number(noveltyRate.baseline).toFixed(2)}</strong>
               </span>
             </div>
 
@@ -579,7 +581,7 @@ export default function Monitor({ onNavigateReview }) {
           </div>
 
           <p style={{ fontSize: '0.78rem', color: 'var(--on-surface-variant)', marginTop: '1rem', paddingTop: '0.75rem', borderTop: '1px solid var(--surface-container-low)' }}>
-            Measures mathematical distance from training embeddings (novel scam indicator).
+            {t('mon.card.novDesc')}
           </p>
         </div>
 
@@ -597,7 +599,7 @@ export default function Monitor({ onNavigateReview }) {
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.75rem' }}>
               <span style={{ fontSize: '0.78rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--on-surface-variant)' }}>
-                Language Mix (PSI)
+                {t('mon.card.psi')}
               </span>
               <span style={{
                 padding: '0.15rem 0.55rem',
@@ -607,7 +609,7 @@ export default function Monitor({ onNavigateReview }) {
                 background: langPsi.status === 'alert' ? 'var(--error-container)' : 'var(--surface-container)',
                 color: langPsi.status === 'alert' ? 'var(--error)' : 'var(--primary)'
               }}>
-                {langPsi.status === 'alert' ? 'DRIFT ALERT' : 'HEALTHY'}
+                {langPsi.status === 'alert' ? t('mon.status.alert') : t('mon.status.ok')}
               </span>
             </div>
 
@@ -616,7 +618,7 @@ export default function Monitor({ onNavigateReview }) {
                 {Number(langPsi.value).toFixed(2)}
               </span>
               <span style={{ fontSize: '0.8rem', color: 'var(--on-surface-variant)' }}>
-                baseline: <strong style={{ color: 'var(--on-surface)' }}>{Number(langPsi.baseline).toFixed(2)}</strong>
+                {t('mon.baseline')} <strong style={{ color: 'var(--on-surface)' }}>{Number(langPsi.baseline).toFixed(2)}</strong>
               </span>
             </div>
 
@@ -626,7 +628,7 @@ export default function Monitor({ onNavigateReview }) {
           </div>
 
           <p style={{ fontSize: '0.78rem', color: 'var(--on-surface-variant)', marginTop: '1rem', paddingTop: '0.75rem', borderTop: '1px solid var(--surface-container-low)' }}>
-            Population Stability Index tracking sudden influx of Tanglish or mixed scripts.
+            {t('mon.card.psiDesc')}
           </p>
         </div>
       </section>
@@ -644,22 +646,22 @@ export default function Monitor({ onNavigateReview }) {
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <Activity size={20} color="var(--secondary)" />
               <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--primary)' }}>
-                Confidence vs. Novelty Stream (Recent Traffic)
+                {t('mon.chart.title')}
               </h2>
             </div>
             <p style={{ fontSize: '0.85rem', color: 'var(--on-surface-variant)', marginTop: '0.2rem' }}>
-              Dual telemetry time-series across sliding inferences. Novelty spikes coincide with model confidence breakdown.
+              {t('mon.chart.desc')}
             </p>
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', background: 'var(--surface-container-low)', padding: '0.4rem 1.15rem', borderRadius: '9999px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
               <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: 'var(--secondary)' }} />
-              <span style={{ fontSize: '0.78rem', fontWeight: 700 }}>Confidence (%)</span>
+              <span style={{ fontSize: '0.78rem', fontWeight: 700 }}>{t('mon.chart.conf')}</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
               <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: 'var(--error)' }} />
-              <span style={{ fontSize: '0.78rem', fontWeight: 700 }}>Novelty (%)</span>
+              <span style={{ fontSize: '0.78rem', fontWeight: 700 }}>{t('mon.chart.nov')}</span>
             </div>
           </div>
         </div>
@@ -695,18 +697,18 @@ export default function Monitor({ onNavigateReview }) {
                         fontSize: '0.8rem'
                       }}>
                         <strong style={{ display: 'block', color: 'var(--primary)', marginBottom: '4px' }}>
-                          Stream {d.tick} ({d.language})
+                          {t('mon.tt.stream')} {d.tick} ({d.language})
                         </strong>
-                        <p style={{ color: 'var(--secondary)' }}>Confidence: <strong>{d.confidence}%</strong></p>
-                        <p style={{ color: 'var(--error)' }}>Novelty: <strong>{d.novelty}%</strong></p>
+                        <p style={{ color: 'var(--secondary)' }}>{t('donut.confidence')}: <strong>{d.confidence}%</strong></p>
+                        <p style={{ color: 'var(--error)' }}>{t('mon.novelty')}: <strong>{d.novelty}%</strong></p>
                       </div>
                     );
                   }
                   return null;
                 }}
               />
-              <ReferenceLine y={75} stroke="var(--error)" strokeDasharray="4 4" label={{ value: 'Novelty Ceiling (75%)', fill: 'var(--error)', fontSize: 10, position: 'insideTopLeft' }} />
-              <ReferenceLine y={55} stroke="var(--on-surface-variant)" strokeDasharray="4 4" label={{ value: 'Confidence Floor (55%)', fill: 'var(--on-surface-variant)', fontSize: 10, position: 'insideTopLeft' }} />
+              <ReferenceLine y={75} stroke="var(--error)" strokeDasharray="4 4" label={{ value: t('mon.ref.nov'), fill: 'var(--error)', fontSize: 10, position: 'insideTopLeft' }} />
+              <ReferenceLine y={55} stroke="var(--on-surface-variant)" strokeDasharray="4 4" label={{ value: t('mon.ref.conf'), fill: 'var(--on-surface-variant)', fontSize: 10, position: 'insideTopLeft' }} />
               <Area type="monotone" dataKey="confidence" stroke="#0051d5" strokeWidth={2.5} fillOpacity={1} fill="url(#colorConf)" />
               <Area type="monotone" dataKey="novelty" stroke="#ba1a1a" strokeWidth={2.5} fillOpacity={1} fill="url(#colorNov)" />
             </AreaChart>
@@ -728,10 +730,10 @@ export default function Monitor({ onNavigateReview }) {
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <Info size={16} color="var(--secondary)" />
-            <span>Novelty distance spikes to 0.84 following romanized vernacular tokens <code style={{ color: 'var(--primary)', fontWeight: 700 }}>"Aswesuma-UDI salli labaganna"</code>.</span>
+            <span>{t('mon.note')} <code style={{ color: 'var(--primary)', fontWeight: 700 }}>"Aswesuma-UDI salli labaganna"</code>.</span>
           </div>
           <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 700, color: 'var(--primary)' }}>
-            Anomaly Score: 9.42 / 10.0
+            {t('mon.anomaly')}
           </span>
         </div>
       </section>
@@ -766,7 +768,7 @@ export default function Monitor({ onNavigateReview }) {
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
               <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--primary)' }}>
-                Model Quarantine Status: Safe Fallback Engaged
+                {t('mon.q.title')}
               </h3>
               <span style={{
                 padding: '0.15rem 0.6rem',
@@ -776,11 +778,11 @@ export default function Monitor({ onNavigateReview }) {
                 fontSize: '0.75rem',
                 fontWeight: 800
               }}>
-                Gate: HELD
+                {t('mon.q.gate')}
               </span>
             </div>
             <p style={{ fontSize: '0.85rem', color: 'var(--on-surface-variant)', marginTop: '0.25rem' }}>
-              <strong>Unlabelled drift samples</strong> pending human validation before TF-IDF & sentence transformer re-fit. The new model is promoted only if held-out macro-F1 stays within 0.01 of the current model and accuracy on the never-reviewed shifted_eval set does not drop.
+              {t('mon.q.desc')}
             </p>
           </div>
         </div>
@@ -801,7 +803,7 @@ export default function Monitor({ onNavigateReview }) {
             flexShrink: 0
           }}
         >
-          Inspect Flagged Samples
+          {t('mon.inspect')}
         </button>
       </section>
 
@@ -831,10 +833,10 @@ export default function Monitor({ onNavigateReview }) {
           </div>
           <div>
             <strong style={{ display: 'block', fontSize: '0.9rem', color: 'var(--primary)' }}>
-              Report scams to Sri Lanka CERT
+              {t('mon.cert.title')}
             </strong>
             <span style={{ fontSize: '0.78rem', color: 'var(--on-surface-variant)' }}>
-              Hotline 101 or cert.gov.lk. ScamRadar does not send any data to CERT automatically.
+              {t('mon.cert.desc')}
             </span>
           </div>
         </div>

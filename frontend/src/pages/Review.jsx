@@ -12,6 +12,7 @@ import {
   PhoneCall
 } from 'lucide-react';
 import { API_URL } from '../config';
+import { useLang } from '../i18n';
 
 // Fallback high-fidelity sample queue items matching the Civic Shield design
 const DEFAULT_REVIEW_ITEMS = [
@@ -28,6 +29,7 @@ const DEFAULT_REVIEW_ITEMS = [
 ];
 
 export default function Review() {
+  const { t, has } = useLang();
   const [items, setItems] = useState([]);
   const [activeFilter, setActiveFilter] = useState('all');
   const [markedLabels, setMarkedLabels] = useState({});
@@ -46,6 +48,7 @@ export default function Review() {
             id: item.id || 100 + idx,
             text: item.text,
             threat: item.scam_type ? `Target: ${item.scam_type.replace(/_/g, ' ')}` : 'Zero-day novelty vector detected',
+            scamType: item.scam_type,
             language: item.language || 'si',
             verdict: item.verdict || 'Scam',
             confidence: item.confidence ?? 0.45,
@@ -134,15 +137,15 @@ export default function Review() {
               marginBottom: '0.85rem'
             }}>
               <span>🛡️</span>
-              <span>Safe-Fallback Quarantine • Active Feedback Loop</span>
+              <span>{t('rev.badge')}</span>
             </div>
 
             <h1 style={{ fontSize: '2.2rem', fontWeight: 800, color: 'var(--primary)', letterSpacing: '-0.025em', lineHeight: 1.25 }}>
-              Human-in-the-Loop Review Queue
+              {t('rev.title')}
             </h1>
 
             <p style={{ fontSize: '0.95rem', color: 'var(--on-surface-variant)', marginTop: '0.5rem', lineHeight: 1.6 }}>
-              Messages intercepted by calibrated fallback thresholds due to high lexeme novelty or ambiguous classifier confidence. Annotations immediately backpropagate into synthetic training sets to defend against emerging multi-script Sri Lankan threats.
+              {t('rev.desc')}
             </p>
           </div>
 
@@ -168,12 +171,12 @@ export default function Review() {
               }}
             >
               <RotateCw size={18} className={retraining ? 'spin' : ''} />
-              <span>{retrainSuccess ? 'Gated & Synced!' : (retraining ? 'Retraining Model...' : 'Retrain & Gate Model')}</span>
+              <span>{retrainSuccess ? t('rev.retrain.done') : (retraining ? t('rev.retrain.busy') : t('rev.retrain.btn'))}</span>
             </button>
 
             <span style={{ fontSize: '0.78rem', color: 'var(--on-surface-variant)', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
               <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--secondary)' }} />
-              Gate: held-out macro-F1 may drop by 0.01 at most · shifted_eval accuracy must not drop
+              {t('rev.gate')}
             </span>
           </div>
         </div>
@@ -190,50 +193,50 @@ export default function Review() {
         }}>
           <div>
             <span style={{ fontSize: '0.72rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--on-surface-variant)' }}>
-              Awaiting Decision
+              {t('rev.k.await')}
             </span>
             <div style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--primary)', lineHeight: 1.2 }}>
               {items.length}
             </div>
             <div style={{ fontSize: '0.78rem', color: 'var(--error)', display: 'flex', alignItems: 'center', gap: '0.25rem', marginTop: '0.2rem' }}>
               <TrendingUp size={13} />
-              <span>+12 new today</span>
+              <span>{t('rev.k.new')}</span>
             </div>
           </div>
 
           <div>
             <span style={{ fontSize: '0.72rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--on-surface-variant)' }}>
-              High Vector Novelty
+              {t('rev.k.nov')}
             </span>
             <div style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--tertiary)', lineHeight: 1.2 }}>
               {highNoveltyCount}
             </div>
             <div style={{ fontSize: '0.78rem', color: 'var(--on-surface-variant)', marginTop: '0.2rem' }}>
-              Distance &gt; 0.60
+              {t('rev.k.novSub')}
             </div>
           </div>
 
           <div>
             <span style={{ fontSize: '0.72rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--on-surface-variant)' }}>
-              Low Confidence
+              {t('rev.k.low')}
             </span>
             <div style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--on-surface)', lineHeight: 1.2 }}>
               {lowConfCount}
             </div>
             <div style={{ fontSize: '0.78rem', color: 'var(--on-surface-variant)', marginTop: '0.2rem' }}>
-              Margin &lt; 0.50 score
+              {t('rev.k.lowSub')}
             </div>
           </div>
 
           <div>
             <span style={{ fontSize: '0.72rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--on-surface-variant)' }}>
-              Target Threat Vector
+              {t('rev.k.target')}
             </span>
             <div style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--primary)', lineHeight: 1.2 }}>
-              SL-UDI Mimicry
+              {t('rev.k.targetVal')}
             </div>
             <div style={{ fontSize: '0.78rem', color: 'var(--on-surface-variant)', marginTop: '0.2rem' }}>
-              78% of incoming drift
+              {t('rev.k.targetSub')}
             </div>
           </div>
         </div>
@@ -255,13 +258,13 @@ export default function Review() {
         {/* Filter Tabs */}
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
           {[
-            { id: 'all', label: `All (${items.length})` },
-            { id: 'novelty', label: 'Novelty > 60%' },
-            { id: 'confidence', label: 'Low Confidence (< 50%)' },
-            { id: 'si', label: 'Sinhala (SI)' },
-            { id: 'ta', label: 'Tamil (TA)' },
+            { id: 'all', label: t('rev.f.all', { n: items.length }) },
+            { id: 'novelty', label: t('rev.f.nov') },
+            { id: 'confidence', label: t('rev.f.low') },
+            { id: 'si', label: t('rev.f.si') },
+            { id: 'ta', label: t('rev.f.ta') },
             { id: 'singlish', label: 'Singlish' },
-            { id: 'en', label: 'English (EN)' }
+            { id: 'en', label: t('rev.f.en') }
           ].map(f => (
             <button
               key={f.id}
@@ -299,13 +302,13 @@ export default function Review() {
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
             <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--surface-container-highest)' }} />
             <strong style={{ color: 'var(--on-surface)' }}>{lowConfCount}</strong>
-            <span>Low Confidence</span>
+            <span>{t('rev.k.low')}</span>
           </div>
           <span>•</span>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
             <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--tertiary-fixed)' }} />
             <strong style={{ color: 'var(--on-surface)' }}>{highNoveltyCount}</strong>
-            <span>High Novelty Drift</span>
+            <span>{t('rev.chip.nov')}</span>
           </div>
         </div>
       </section>
@@ -323,12 +326,12 @@ export default function Review() {
             <thead style={{ background: 'var(--surface-container-low)', color: 'var(--on-surface-variant)' }}>
               <tr style={{ textTransform: 'uppercase', fontSize: '0.72rem', letterSpacing: '0.06em', fontWeight: 800 }}>
                 <th style={{ padding: '0.85rem 1.25rem' }}>ID</th>
-                <th style={{ padding: '0.85rem 1.25rem', minWidth: '320px' }}>Message Text & Threat Signature</th>
-                <th style={{ padding: '0.85rem 1rem' }}>Script</th>
-                <th style={{ padding: '0.85rem 1rem' }}>ML Verdict</th>
-                <th style={{ padding: '0.85rem 1rem', textAlign: 'right' }}>Confidence</th>
-                <th style={{ padding: '0.85rem 1rem', textAlign: 'right' }}>Novelty</th>
-                <th style={{ padding: '0.85rem 1.25rem', textAlign: 'right', minWidth: '220px' }}>Human Calibration Action</th>
+                <th style={{ padding: '0.85rem 1.25rem', minWidth: '320px' }}>{t('rev.th.msg')}</th>
+                <th style={{ padding: '0.85rem 1rem' }}>{t('rev.th.script')}</th>
+                <th style={{ padding: '0.85rem 1rem' }}>{t('rev.th.verdict')}</th>
+                <th style={{ padding: '0.85rem 1rem', textAlign: 'right' }}>{t('donut.confidence')}</th>
+                <th style={{ padding: '0.85rem 1rem', textAlign: 'right' }}>{t('mon.novelty')}</th>
+                <th style={{ padding: '0.85rem 1.25rem', textAlign: 'right', minWidth: '220px' }}>{t('rev.th.action')}</th>
               </tr>
             </thead>
             <tbody>
@@ -354,7 +357,7 @@ export default function Review() {
                       </div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.75rem', color: 'var(--error)' }}>
                         <span>⚠️</span>
-                        <span>{item.threat}</span>
+                        <span>{item.scamType ? `${t('rev.target')} ${has(`type.${item.scamType}.name`) ? t(`type.${item.scamType}.name`) : item.scamType.replace(/_/g, ' ')}` : item.threat}</span>
                       </div>
                     </td>
 
@@ -381,7 +384,7 @@ export default function Review() {
                         background: item.verdict === 'Scam' ? 'var(--error-container)' : 'var(--surface-container-highest)',
                         color: item.verdict === 'Scam' ? 'var(--error)' : 'var(--primary)'
                       }}>
-                        {item.verdict}
+                        {t(`rev.v.${item.verdict}`)}
                       </span>
                     </td>
 
@@ -407,7 +410,7 @@ export default function Review() {
                       {isMarked ? (
                         <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', color: 'var(--secondary)', fontWeight: 700, fontSize: '0.78rem' }}>
                           <Check size={16} />
-                          <span>Marked: {isMarked}</span>
+                          <span>{t('rev.marked')} {isMarked}</span>
                         </div>
                       ) : (
                         <div style={{ display: 'inline-flex', gap: '0.5rem' }}>
@@ -426,7 +429,7 @@ export default function Review() {
                               transition: 'all 0.15s ease'
                             }}
                           >
-                            SL-UDI Scam
+                            {t('rev.btn.udi')}
                           </button>
 
                           <button
@@ -444,7 +447,7 @@ export default function Review() {
                               transition: 'all 0.15s ease'
                             }}
                           >
-                            Legit
+                            {t('rev.btn.legit')}
                           </button>
                         </div>
                       )}
@@ -469,12 +472,12 @@ export default function Review() {
           color: 'var(--on-surface-variant)'
         }}>
           <div>
-            Showing <strong style={{ color: 'var(--on-surface)' }}>1 to {filteredItems.length}</strong> of <strong style={{ color: 'var(--on-surface)' }}>{items.length}</strong> flagged items
+            {t('rev.showing', { a: filteredItems.length, b: items.length })}
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
             <button type="button" disabled style={{ padding: '0.35rem 0.75rem', borderRadius: '9999px', background: 'var(--surface)', color: 'var(--on-surface)', border: 'none', cursor: 'not-allowed', opacity: 0.5 }}>
-              Previous
+              {t('rev.prev')}
             </button>
             <button type="button" style={{ width: '30px', height: '30px', borderRadius: '50%', background: 'var(--primary)', color: 'var(--on-accent)', border: 'none', fontWeight: 700 }}>
               1
@@ -486,7 +489,7 @@ export default function Review() {
               3
             </button>
             <button type="button" style={{ padding: '0.35rem 0.75rem', borderRadius: '9999px', background: 'var(--surface)', color: 'var(--on-surface)', border: 'none', cursor: 'pointer' }}>
-              Next
+              {t('rev.next')}
             </button>
           </div>
         </div>
@@ -510,14 +513,14 @@ export default function Review() {
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--secondary)', marginBottom: '0.5rem' }}>
               <ShieldCheck size={18} />
               <span style={{ fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-                Safety Assurance
+                {t('rev.safety')}
               </span>
             </div>
             <h4 style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--on-surface)' }}>
-              Zero-Day Campaign Intercept
+              {t('rev.zd.title')}
             </h4>
             <p style={{ fontSize: '0.85rem', color: 'var(--on-surface-variant)', marginTop: '0.35rem', lineHeight: 1.5 }}>
-              Unseen Sinhala and Tamil lexemes trigger immediate safe fallback routing, insulating citizens while human threat evaluators adjudicate the active token set.
+              {t('rev.zd.desc')}
             </p>
           </div>
 
@@ -530,7 +533,7 @@ export default function Review() {
             alignItems: 'center',
             fontSize: '0.8rem'
           }}>
-            <span style={{ color: 'var(--on-surface-variant)' }}>Fallback Latency</span>
+            <span style={{ color: 'var(--on-surface-variant)' }}>{t('rev.latency')}</span>
             <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 800, color: 'var(--primary)' }}>14.2 ms / request</span>
           </div>
         </div>
@@ -550,10 +553,10 @@ export default function Review() {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div>
               <h4 style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--on-surface)' }}>
-                Quarantine Lexical Distribution
+                {t('rev.dist.title')}
               </h4>
               <p style={{ fontSize: '0.8rem', color: 'var(--on-surface-variant)', marginTop: '0.15rem' }}>
-                Script composition across currently isolated payloads
+                {t('rev.dist.desc')}
               </p>
             </div>
             <span style={{
@@ -564,7 +567,7 @@ export default function Review() {
               fontWeight: 700,
               color: 'var(--on-surface-variant)'
             }}>
-              {items.length} In-Flight
+              {items.length} {t('rev.inflight')}
             </span>
           </div>
 
@@ -580,7 +583,7 @@ export default function Review() {
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.85rem', marginTop: '0.75rem', fontSize: '0.75rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
                 <span style={{ width: '8px', height: '8px', borderRadius: '2px', background: 'var(--primary)' }} />
-                <span>Sinhala (42%)</span>
+                <span>{t('rev.l.si')} (42%)</span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
                 <span style={{ width: '8px', height: '8px', borderRadius: '2px', background: 'var(--secondary-container)' }} />
@@ -588,17 +591,17 @@ export default function Review() {
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
                 <span style={{ width: '8px', height: '8px', borderRadius: '2px', background: 'var(--tertiary-container)' }} />
-                <span>Tamil & Tanglish (18%)</span>
+                <span>{t('rev.l.ta')} (18%)</span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
                 <span style={{ width: '8px', height: '8px', borderRadius: '2px', background: 'var(--outline-variant)' }} />
-                <span>English (12%)</span>
+                <span>{t('rev.l.en')} (12%)</span>
               </div>
             </div>
           </div>
 
           <p style={{ fontSize: '0.8rem', color: 'var(--on-surface-variant)' }}>
-            Annotating remaining quarantined instances recalibrates word vector clusters across all four linguistic modalities.
+            {t('rev.dist.foot')}
           </p>
         </div>
       </div>
