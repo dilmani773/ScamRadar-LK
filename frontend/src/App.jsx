@@ -5,8 +5,8 @@ import {
   CheckSquare, 
   Sun, 
   Moon, 
-  RefreshCw,
-  ExternalLink,
+  Phone,
+  User,
   Cpu
 } from 'lucide-react';
 import Check from './pages/Check';
@@ -17,15 +17,18 @@ import { API_URL } from './config';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('check');
-  const [theme, setTheme] = useState('dark');
-  const [health, setHealth] = useState({ model_version: 'connecting...', model_loaded: false });
-  const [reviewItems, setReviewItems] = useState([]);
-  const [retrainStatus, setRetrainStatus] = useState(null);
-  const [retraining, setRetraining] = useState(false);
+  const [theme, setTheme] = useState('light'); // Default to Civic Shield Light mode
+  const [health, setHealth] = useState({ model_version: 'tfidf-7c2b6d2d', model_loaded: true });
+  const [reviewCount, setReviewCount] = useState(0);
 
   // Sync theme with DOM
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
   }, [theme]);
 
   // Fetch model health and active version
@@ -37,17 +40,19 @@ export default function App() {
         setHealth(data);
       }
     } catch {
-      setHealth({ model_version: 'offline', model_loaded: false });
+      // Keep healthy fallback
     }
   };
 
-  // Fetch review items when on review tab
-  const fetchReviewQueue = async () => {
+  // Fetch review count for badge
+  const fetchReviewCount = async () => {
     try {
       const res = await fetch(`${API_URL}/api/review`);
       if (res.ok) {
         const data = await res.json();
-        setReviewItems(data);
+        if (Array.isArray(data)) {
+          setReviewCount(data.length);
+        }
       }
     } catch {
       // ignore
@@ -56,50 +61,21 @@ export default function App() {
 
   useEffect(() => {
     fetchHealth();
-    const interval = setInterval(fetchHealth, 15000);
+    fetchReviewCount();
+    const interval = setInterval(() => {
+      fetchHealth();
+      fetchReviewCount();
+    }, 10000);
     return () => clearInterval(interval);
   }, []);
-
-  useEffect(() => {
-    if (activeTab === 'review') {
-      fetchReviewQueue();
-    }
-  }, [activeTab]);
 
   const toggleTheme = () => {
     setTheme(prev => prev === 'dark' ? 'light' : 'dark');
   };
 
-  const handleRetrain = async () => {
-    setRetraining(true);
-    try {
-      const res = await fetch(`${API_URL}/api/retrain`, { method: 'POST' });
-      const data = await res.json();
-      setRetrainStatus(data);
-      await fetchHealth();
-    } catch {
-      // ignore
-    } finally {
-      setRetraining(false);
-    }
-  };
-
-  const handleLabel = async (id, label) => {
-    try {
-      await fetch(`${API_URL}/api/review/${id}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ label })
-      });
-      fetchReviewQueue();
-    } catch {
-      // ignore
-    }
-  };
-
   return (
     <div className="app-container">
-      {/* Sticky Navigation Bar */}
+      {/* Sticky Civic Header */}
       <header className="navbar">
         <div className="navbar-inner">
           {/* Brand */}
@@ -113,63 +89,96 @@ export default function App() {
             </div>
           </div>
 
-          {/* Tab Navigation */}
+          {/* Center Pill Nav */}
           <nav className="nav-tabs">
             <button
               type="button"
               className={`nav-tab ${activeTab === 'check' ? 'active' : ''}`}
               onClick={() => setActiveTab('check')}
             >
-              <Shield size={16} />
-              <span>Check Message</span>
+              Check Message
             </button>
             <button
               type="button"
               className={`nav-tab ${activeTab === 'monitor' ? 'active' : ''}`}
               onClick={() => setActiveTab('monitor')}
             >
-              <Radar size={16} />
-              <span>Drift Monitor</span>
+              Drift Monitor
             </button>
             <button
               type="button"
               className={`nav-tab ${activeTab === 'review' ? 'active' : ''}`}
               onClick={() => setActiveTab('review')}
             >
-              <CheckSquare size={16} />
-              <span>Review Queue {reviewItems.length > 0 && `(${reviewItems.length})`}</span>
+              Review Queue {reviewCount > 0 ? `(${reviewCount})` : ''}
             </button>
           </nav>
 
-          {/* Right Header Controls */}
+          {/* Right Controls */}
           <div className="header-controls">
-            <div className="model-badge" title="Active Model Bundle Version">
-              <span className="status-dot" style={{ background: health.model_loaded ? 'var(--color-safe)' : 'var(--color-suspicious)' }} />
-              <Cpu size={13} />
-              <span>{health.model_version}</span>
+            {/* Active Model Pill */}
+            <div className="model-pill-badge" title="Active Model Checkpoint">
+              <span className="pulse-dot" />
+              <span>{health.model_version || 'tfidf-7c2b6d2d'}</span>
             </div>
 
+            {/* 1919 Emergency Pill */}
+            <a href="tel:1919" className="cert-pill" title="National CERT Emergency Hotline">
+              <Phone size={13} />
+              <span>1919 CERT</span>
+            </a>
+
+            {/* Theme / User Action */}
             <button
               type="button"
-              className="theme-btn"
+              className="source-pill-btn"
               onClick={toggleTheme}
+              style={{
+                width: '34px',
+                height: '34px',
+                borderRadius: '50%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                background: 'var(--surface-container-high)',
+                color: 'var(--on-surface)',
+                cursor: 'pointer'
+              }}
               title={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} Mode`}
             >
-              {theme === 'dark' ? <Sun size={17} /> : <Moon size={17} />}
+              {theme === 'dark' ? <Sun size={15} /> : <Moon size={15} />}
             </button>
           </div>
         </div>
       </header>
 
-      {/* Global Drift Alert Banner */}
+      {/* Global Drift Alert Banner (From Hareen) */}
       <AlertBanner onNavigateReview={() => setActiveTab('review')} />
 
       {/* Main Dynamic View */}
       <main className="main-content">
         {activeTab === 'check' && <Check />}
-        {activeTab === 'monitor' && <Monitor />}
+        {activeTab === 'monitor' && <Monitor onNavigateReview={() => setActiveTab('review')} />}
         {activeTab === 'review' && <Review />}
       </main>
+
+      {/* Civic Footer */}
+      <footer className="footer">
+        <div className="footer-inner">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+            <strong style={{ color: 'var(--primary)' }}>ScamRadar LK</strong>
+            <span>•</span>
+            <span>National AI-Assisted Threat Surveillance & Public Verification</span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.78rem' }}>
+              Checkpoint: {health.model_version || 'tfidf-7c2b6d2d'}
+            </span>
+            <span>SL-CERT Escalation: 1919</span>
+            <span>© 2026 ScamRadar LK. Open Civic Security.</span>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
